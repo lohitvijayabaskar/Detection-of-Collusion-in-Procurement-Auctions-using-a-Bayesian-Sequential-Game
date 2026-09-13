@@ -1,0 +1,16 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environments
+venv/
+env/
+
+# IDE files
+.vscode/
+.idea/
+
+# Large checkpoints and logs
+procurement_model_checkpoint/
+coadaptation_log.csv
+*.log
