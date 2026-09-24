@@ -139,7 +139,7 @@ class ProcurementEmergentEnv(ParallelEnv):
         self.possible_agents = [f"firm{i:02d}" for i in range(1, self.total_firms + 1)]
         self.agents = self.possible_agents[:]
 
-        # Actions: [Bidding Strategy (0-5), Admission Vote (0-1), Punishment Vote (0-1)]
+        # Actions: [Bidding Strategy (0-6), Admission Vote (0-1), Punishment Vote (0-1)]
         # Bidding Strategies:
         # 0: Honest Bertrand (cost * ~1.02)
         # 1: Honest Cournot Low (cost * ~1.10)
@@ -147,8 +147,9 @@ class ProcurementEmergentEnv(ParallelEnv):
         # 3: Honest Random (cost * ~1.25, noisy)
         # 4: Dishonest Target Price (bid near reserve)
         # 5: Dishonest Cover Bid (yield to designated winner, else bid high)
+        # 6: Adaptive Undercutting (bid slightly below previous winning bid)
         self._action_spaces = {
-            agent: MultiDiscrete([6, 2, 2])
+            agent: MultiDiscrete([7, 2, 2])
             for agent in self.possible_agents
         }
         
@@ -275,6 +276,13 @@ class ProcurementEmergentEnv(ParallelEnv):
                 else:
                     # Cover bid near reserve
                     markup = (self.reserve_price / cost) * random.uniform(0.95, 1.0)
+            elif strategy == 6:
+                # Adaptive Undercutting
+                # Try to undercut the previous winning bid by 1-2%, but never bid below cost + 1%
+                target_bid = self.prev_winning_bid * random.uniform(0.98, 0.99)
+                min_viable_bid = cost * 1.01
+                bid_value = max(target_bid, min_viable_bid)
+                markup = bid_value / cost
             else:
                 markup = 1.0
                 
@@ -343,7 +351,20 @@ class ProcurementEmergentEnv(ParallelEnv):
 # 3. Calibration reference bidders
 # =====================================================================
 def _competitive_calibration_bidder(cost: float, reserve_price: float) -> float:
-    markup = random.uniform(1.00, 1.02)
+    # Randomly select among the honest strategies available to RL agents,
+    # heavily weighting Bertrand (strategy 0) so the regulator expects tight clusters
+    # as normal competitive behavior.
+    if random.random() < 0.90:
+        markup = random.uniform(1.0, 1.05) # Strategy 0
+    else:
+        strategy = random.randint(1, 3)
+        if strategy == 1:
+            markup = random.uniform(1.05, 1.15)
+        elif strategy == 2:
+            markup = random.uniform(1.15, 1.25)
+        else:  # strategy == 3
+            markup = random.uniform(1.0, 1.5)
+        
     return round(min(cost * markup, reserve_price), 2)
 
 def _collusive_calibration_bidder(cost: float, reserve_price: float) -> float:

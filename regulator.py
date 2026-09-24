@@ -318,6 +318,8 @@ class BayesianSequentialRegulator:
             log_prior_odds = np.log(pred / (1 - pred))
         log_post_odds = log_prior_odds + llr
         self.posterior = float(expit(log_post_odds))
+        if self.config.transition is None:
+            self.posterior = min(max(self.posterior, 1e-4), 1 - 1e-4)
 
         # (b) CUSUM / Page's test -- robust to unknown transition dynamics
         self.cusum = max(0.0, self.cusum + llr)

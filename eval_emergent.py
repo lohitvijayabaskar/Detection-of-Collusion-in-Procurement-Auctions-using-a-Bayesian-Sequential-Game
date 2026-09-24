@@ -83,7 +83,8 @@ def evaluate_model():
               f"alarm={'YES' if g['alarm'] else 'no'}")
         for idx, (agent, info) in enumerate(sorted_agents[:5]):
             flag = " <== WINNER" if agent == g["winner"] else ""
-            print(f"    {idx+1:02d}. {agent} | markup={info['markup']:.3f}x | "
+            strat = info.get("strategy", "?")
+            print(f"    {idx+1:02d}. {agent} (Strat {strat}) | markup={info['markup']:.3f}x | "
                   f"bid=${info['bid']:.2f} | reward=${info['reward']:.2f}{flag}")
 
         if all(terms.values()):

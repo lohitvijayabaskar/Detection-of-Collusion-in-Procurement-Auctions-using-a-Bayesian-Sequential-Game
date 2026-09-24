@@ -71,6 +71,9 @@ def evaluate_coadaptation(algo, l0, l1, cusum_h, sr_h, n_episodes: int = 5) -> d
     )
 
     markups, posteriors, alarms, profits, strategies = [], [], [], [], []
+    cartel_sizes, buyer_costs, allocative_efficiencies = [], [], []
+    tp, fp, tn, fn = 0, 0, 0, 0
+    
     for ep in range(n_episodes):
         obs, _ = env.reset(seed=1000 + ep)
         done = False
@@ -80,28 +83,61 @@ def evaluate_coadaptation(algo, l0, l1, cusum_h, sr_h, n_episodes: int = 5) -> d
                 for a in env.agents
             }
             obs, rewards, terms, truncs, infos = env.step(actions)
+            
+            # Track agent-level metrics
+            costs = {}
             for a, info in infos.items():
                 if a == "__common__":
                     continue
                 markups.append(info["markup"])
                 strategies.append(info["strategy"])
+                costs[a] = info["cost"]
+                
+            # Track global/economic metrics
             g = infos["__common__"]
             posteriors.append(g["posterior_collusion"])
             alarms.append(g["alarm"])
             profits.append(sum(rewards.values()))
+            cartel_sizes.append(g["cartel_size"])
+            buyer_costs.append(g["winning_bid"])
+            
+            # Allocative Efficiency: Did the firm with the absolute lowest cost win?
+            min_cost = min(costs.values())
+            winner_cost = costs[g["winner"]]
+            allocative_efficiencies.append(1 if winner_cost == min_cost else 0)
+            
+            # Confusion matrix tracking
+            is_cartel_active = g["cartel_size"] > 1
+            if g["alarm"] and is_cartel_active:
+                tp += 1
+            elif g["alarm"] and not is_cartel_active:
+                fp += 1
+            elif not g["alarm"] and not is_cartel_active:
+                tn += 1
+            elif not g["alarm"] and is_cartel_active:
+                fn += 1
+                
             done = all(terms.values())
 
-    strategy_counts = {i: 0 for i in range(6)}
+    strategy_counts = {i: 0 for i in range(7)}
     for s in strategies:
         strategy_counts[s] = strategy_counts.get(s, 0) + 1
     total_actions = len(strategies) if strategies else 1
     strategy_dist = {f"strat_{k}_pct": (v / total_actions) * 100 for k, v in strategy_counts.items()}
+
+    tpr = (tp / (tp + fn)) if (tp + fn) > 0 else 0.0
+    fpr = (fp / (fp + tn)) if (fp + tn) > 0 else 0.0
 
     res = {
         "collusion_index": float(np.mean(markups)),
         "mean_posterior": float(np.mean(posteriors)),
         "alarm_rate": float(np.mean(alarms)),
         "mean_round_profit": float(np.mean(profits)),
+        "avg_cartel_size": float(np.mean(cartel_sizes)),
+        "avg_buyer_cost": float(np.mean(buyer_costs)),
+        "allocative_efficiency": float(np.mean(allocative_efficiencies)),
+        "tpr": tpr,
+        "fpr": fpr,
     }
     res.update(strategy_dist)
     return res
@@ -170,9 +206,10 @@ def main():
     with open(COADAPTATION_LOG, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["iteration", "reward_mean", "collusion_index",
-                          "mean_posterior", "alarm_rate", "mean_round_profit",
+                          "mean_posterior", "alarm_rate", "tpr", "fpr", "mean_round_profit",
+                          "avg_cartel_size", "avg_buyer_cost", "allocative_efficiency",
                           "strat_0_pct", "strat_1_pct", "strat_2_pct", 
-                          "strat_3_pct", "strat_4_pct", "strat_5_pct"])
+                          "strat_3_pct", "strat_4_pct", "strat_5_pct", "strat_6_pct"])
 
         for i in range(1, 101):
             result = algo.train()
@@ -187,14 +224,14 @@ def main():
             if i % 10 == 0 or i == 1:
                 co = evaluate_coadaptation(algo, l0, l1, cusum_h, sr_h, n_episodes=5)
                 print(f"Iteration {i:03d} | RewardMean={reward:7.2f} | "
-                      f"CollIdx={co['collusion_index']:.3f} | "
-                      f"P(cartel)={co['mean_posterior']:.3f} | "
-                      f"Alarm={co['alarm_rate']:.3f} | "
-                      f"Strats: 0:{co['strat_0_pct']:.0f}% 4:{co['strat_4_pct']:.0f}% 5:{co['strat_5_pct']:.0f}%")
+                      f"BuyerCost=${co['avg_buyer_cost']:.2f} | AllocEff={co['allocative_efficiency']:.2f} | "
+                      f"Alarm={co['alarm_rate']:.3f} (TPR:{co['tpr']:.2f}, FPR:{co['fpr']:.2f}) | "
+                      f"Strats: 0:{co['strat_0_pct']:.0f}% 4:{co['strat_4_pct']:.0f}% 5:{co['strat_5_pct']:.0f}% 6:{co['strat_6_pct']:.0f}%")
                 writer.writerow([i, reward, co["collusion_index"], co["mean_posterior"],
-                                  co["alarm_rate"], co["mean_round_profit"],
+                                  co["alarm_rate"], co["tpr"], co["fpr"], co["mean_round_profit"],
+                                  co["avg_cartel_size"], co["avg_buyer_cost"], co["allocative_efficiency"],
                                   co["strat_0_pct"], co["strat_1_pct"], co["strat_2_pct"],
-                                  co["strat_3_pct"], co["strat_4_pct"], co["strat_5_pct"]])
+                                  co["strat_3_pct"], co["strat_4_pct"], co["strat_5_pct"], co["strat_6_pct"]])
                 f.flush()
 
     print(f"\n---> Saving checkpoint to {CHECKPOINT_DIR}...")
