@@ -140,14 +140,14 @@ class ProcurementEmergentEnv(ParallelEnv):
         self.agents = self.possible_agents[:]
 
         # Actions: [Bidding Strategy (0-6), Admission Vote (0-1), Punishment Vote (0-1)]
-        # Bidding Strategies:
-        # 0: Honest Bertrand (cost * ~1.02)
-        # 1: Honest Cournot Low (cost * ~1.10)
-        # 2: Honest Cournot High (cost * ~1.20)
-        # 3: Honest Random (cost * ~1.25, noisy)
-        # 4: Dishonest Target Price (bid near reserve)
-        # 5: Dishonest Cover Bid (yield to designated winner, else bid high)
-        # 6: Adaptive Undercutting (bid slightly below previous winning bid)
+        # Overhauled Dynamic Economic Bidding Strategies:
+        # 0: Honest Bertrand (Max price initially, then competitive markdown from previous clearing price)
+        # 1: Adaptive Best-Response (Empirical surplus maximization based on winning history)
+        # 2: Dynamic Margin Tracking (Market-trend adaptive margin expansion/compression)
+        # 3: Strategic Adaptive Undercutting (Dynamic price shading proportional to cost gap)
+        # 4: Cartel Evasive Target Pricing (Market-anchored collusive rent seeking)
+        # 5: Cartel Camouflaged Cover Bidding (Anti-trust evasive cover bids trailing designated winner)
+        # 6: Tacit Collusion / Focal Point Bidding (Running median price anchoring)
         self._action_spaces = {
             agent: MultiDiscrete([7, 2, 2])
             for agent in self.possible_agents
@@ -171,6 +171,7 @@ class ProcurementEmergentEnv(ParallelEnv):
 
         self.private_costs = {}
         self.prev_winning_bid = self.reserve_price
+        self.winning_bid_history: List[float] = []
         self.round_num = 0
         self.regulator: Optional[BayesianSequentialRegulator] = None
         self._last_posterior = prior_h1
@@ -196,6 +197,7 @@ class ProcurementEmergentEnv(ParallelEnv):
         self.agents = self.possible_agents[:]
         self.round_num = 0
         self.prev_winning_bid = self.reserve_price
+        self.winning_bid_history = []
         self.private_costs = {
             agent: round(random.uniform(50.0, 60.0), 2) for agent in self.agents
         }
@@ -246,6 +248,22 @@ class ProcurementEmergentEnv(ParallelEnv):
         
         # 3. Cartel phase: Identify designated winner
         designated_winner = self.cartel.select_designated_winner(self.private_costs)
+
+        # Calculate history summary metrics for dynamic strategy calculations
+        if self.winning_bid_history:
+            recent_winning_bids = self.winning_bid_history[-5:]
+            avg_winning_bid = float(np.mean(recent_winning_bids))
+            std_winning_bid = max(1.0, float(np.std(recent_winning_bids)) if len(recent_winning_bids) > 1 else 2.5)
+        else:
+            avg_winning_bid = self.reserve_price * 0.95  # ~95.0 initial baseline
+            std_winning_bid = 2.5
+
+        # Pre-calculate designated winner's cartel target bid if cartel exists
+        designated_target_bid = None
+        if designated_winner and designated_winner in actions:
+            des_cost = self.private_costs[designated_winner]
+            collusive_target = min(self.reserve_price * 0.90, max(avg_winning_bid * 1.03, des_cost * 1.25))
+            designated_target_bid = round(max(des_cost * 1.02, min(collusive_target + random.uniform(-0.5, 0.5), self.reserve_price)), 2)
         
         # 4. Bidding phase
         bids = {}
@@ -254,44 +272,67 @@ class ProcurementEmergentEnv(ParallelEnv):
             cost = self.private_costs[agent]
             
             if strategy == 0:
-                # Honest Bertrand
-                markup = random.uniform(1.0, 1.05)
-            elif strategy == 1:
-                # Honest Cournot Low
-                markup = random.uniform(1.05, 1.15)
-            elif strategy == 2:
-                # Honest Cournot High
-                markup = random.uniform(1.15, 1.25)
-            elif strategy == 3:
-                # Honest Random
-                markup = random.uniform(1.0, 1.5)
-            elif strategy == 4:
-                # Dishonest Target Price
-                markup = (self.reserve_price / cost) * random.uniform(0.9, 1.0)
-            elif strategy == 5:
-                # Dishonest Cover Bid
-                if agent == designated_winner:
-                    # Win near cost or slightly inflated
-                    markup = random.uniform(1.0, 1.1)
+                # Honest Bertrand (Max price in Round 1, then competitive markdown from previous winning bid)
+                if not self.winning_bid_history:
+                    raw_bid = self.reserve_price
                 else:
-                    # Cover bid near reserve
-                    markup = (self.reserve_price / cost) * random.uniform(0.95, 1.0)
+                    markdown_pct = random.uniform(0.01, 0.03)
+                    target_bid = self.prev_winning_bid * (1.0 - markdown_pct)
+                    raw_bid = max(cost * 1.01, target_bid)
+            elif strategy == 1:
+                # Adaptive Best-Response (Empirical Surplus Optimization)
+                if avg_winning_bid > cost:
+                    lambda_param = random.uniform(0.40, 0.60)
+                    target_surplus = lambda_param * (avg_winning_bid - cost)
+                    raw_bid = cost + target_surplus + random.uniform(-0.5, 0.5)
+                else:
+                    raw_bid = cost * random.uniform(1.02, 1.05)
+            elif strategy == 2:
+                # Dynamic Margin Tracking (Market Trend Shading)
+                price_trend = avg_winning_bid / self.reserve_price
+                markup = 1.0 + (0.15 * price_trend) + random.uniform(-0.01, 0.01)
+                raw_bid = cost * max(1.015, markup)
+            elif strategy == 3:
+                # Strategic Adaptive Undercutting (Dynamic Price Shading)
+                gap = self.prev_winning_bid - cost
+                if gap > 1.0:
+                    undercut_pct = 0.01 + 0.02 * min(1.0, gap / max(1.0, self.reserve_price - cost))
+                    target_bid = self.prev_winning_bid * (1.0 - undercut_pct)
+                    raw_bid = max(cost * 1.01, target_bid) + random.uniform(-0.2, 0.2)
+                else:
+                    raw_bid = cost * random.uniform(1.01, 1.03)
+            elif strategy == 4:
+                # Cartel Evasive Target Pricing (Market-Anchored Monopoly Rent)
+                collusive_target = min(self.reserve_price * 0.90, max(avg_winning_bid * 1.03, cost * 1.25))
+                raw_bid = collusive_target + random.uniform(-0.75, 0.75)
+            elif strategy == 5:
+                # Cartel Camouflaged Cover Bidding (Anti-Trust Evasive Cover Bids)
+                if agent == designated_winner:
+                    if designated_target_bid is not None:
+                        raw_bid = designated_target_bid
+                    else:
+                        collusive_target = min(self.reserve_price * 0.90, max(avg_winning_bid * 1.03, cost * 1.25))
+                        raw_bid = collusive_target + random.uniform(-0.5, 0.5)
+                else:
+                    # Cover bidder: bid slightly above designated winner's bid with realistic noise
+                    # so that it trails the winner closely without triggering obvious level/variance alarms
+                    base_target = designated_target_bid if designated_target_bid is not None else avg_winning_bid
+                    cover_offset = random.uniform(1.5, 4.0) + max(0.0, random.gauss(0, std_winning_bid * 0.5))
+                    raw_bid = base_target + cover_offset
             elif strategy == 6:
-                # Adaptive Undercutting
-                # Try to undercut the previous winning bid by 1-2%, but never bid below cost + 1%
-                target_bid = self.prev_winning_bid * random.uniform(0.98, 0.99)
-                min_viable_bid = cost * 1.01
-                bid_value = max(target_bid, min_viable_bid)
-                markup = bid_value / cost
+                # Tacit Collusion / Focal Point Bidding (Running Median Anchoring)
+                focal_price = avg_winning_bid
+                firm_offset = random.uniform(0.0, 0.04)
+                raw_bid = max(cost * 1.02, focal_price * (1.0 + firm_offset) + random.uniform(-0.3, 0.3))
             else:
-                markup = 1.0
+                raw_bid = cost * 1.02
                 
-            raw_bid = cost * markup
-            bids[agent] = round(max(cost * 1.00, min(raw_bid, self.reserve_price)), 2)
+            bids[agent] = round(max(cost * 1.01, min(raw_bid, self.reserve_price)), 2)
 
         valid_bids = {k: v for k, v in bids.items() if v <= self.reserve_price}
         winner = min(valid_bids, key=valid_bids.get)
         winning_bid = valid_bids[winner]
+        self.winning_bid_history.append(winning_bid)
         self.prev_winning_bid = winning_bid
 
         # 5. Defector Check & Punishment
@@ -350,26 +391,37 @@ class ProcurementEmergentEnv(ParallelEnv):
 # =====================================================================
 # 3. Calibration reference bidders
 # =====================================================================
-def _competitive_calibration_bidder(cost: float, reserve_price: float) -> float:
-    # Randomly select among the honest strategies available to RL agents,
-    # heavily weighting Bertrand (strategy 0) so the regulator expects tight clusters
-    # as normal competitive behavior.
-    if random.random() < 0.90:
-        markup = random.uniform(1.0, 1.05) # Strategy 0
+def _competitive_calibration_bidder(cost: float, reserve_price: float, prev_winning_bid: float = 95.0) -> float:
+    # Simulates competitive reference bidders using history-aware strategies 0, 1, 2, 3
+    strat = random.choices([0, 1, 2, 3], weights=[0.50, 0.25, 0.15, 0.10])[0]
+    avg_w = prev_winning_bid
+    if strat == 0:
+        if avg_w >= reserve_price or avg_w >= 95.0:
+            raw = reserve_price
+        else:
+            markdown_pct = random.uniform(0.01, 0.03)
+            raw = max(cost * 1.01, avg_w * (1.0 - markdown_pct))
+    elif strat == 1:
+        if avg_w > cost:
+            raw = cost + random.uniform(0.40, 0.60) * (avg_w - cost) + random.uniform(-0.5, 0.5)
+        else:
+            raw = cost * random.uniform(1.02, 1.05)
+    elif strat == 2:
+        price_trend = avg_w / reserve_price
+        raw = cost * max(1.015, 1.0 + (0.15 * price_trend) + random.uniform(-0.01, 0.01))
     else:
-        strategy = random.randint(1, 3)
-        if strategy == 1:
-            markup = random.uniform(1.05, 1.15)
-        elif strategy == 2:
-            markup = random.uniform(1.15, 1.25)
-        else:  # strategy == 3
-            markup = random.uniform(1.0, 1.5)
-        
-    return round(min(cost * markup, reserve_price), 2)
+        gap = avg_w - cost
+        if gap > 1.0:
+            target = avg_w * (1.0 - (0.01 + 0.02 * min(1.0, gap / max(1.0, reserve_price - cost))))
+            raw = max(cost * 1.01, target) + random.uniform(-0.2, 0.2)
+        else:
+            raw = cost * random.uniform(1.01, 1.03)
+    return round(max(cost * 1.01, min(raw, reserve_price)), 2)
 
-def _collusive_calibration_bidder(cost: float, reserve_price: float) -> float:
-    markup = random.uniform(0.90, 0.98) * (reserve_price / cost)
-    return round(min(cost * markup, reserve_price), 2)
+def _collusive_calibration_bidder(cost: float, reserve_price: float, prev_winning_bid: float = 70.0) -> float:
+    collusive_target = min(reserve_price * 0.90, max(prev_winning_bid * 1.03, cost * 1.25))
+    raw = collusive_target + random.uniform(-0.75, 0.75)
+    return round(max(cost * 1.01, min(raw, reserve_price)), 2)
 
 def _uniform_markup_calibration_bidder(cost: float, reserve_price: float) -> float:
     markup = _UNIFORM_MARKUP_SEVERITY[0]
@@ -377,12 +429,14 @@ def _uniform_markup_calibration_bidder(cost: float, reserve_price: float) -> flo
 
 _UNIFORM_MARKUP_SEVERITY = [1.2]
 
-def _complementary_calibration_bidder(cost: float, reserve_price: float, is_designated: bool) -> float:
+def _complementary_calibration_bidder(cost: float, reserve_price: float, is_designated: bool, des_bid: float = 75.0) -> float:
     if is_designated:
-        markup = random.uniform(1.00, 1.06)
+        collusive_target = min(reserve_price * 0.90, max(des_bid * 1.03, cost * 1.25))
+        raw = collusive_target + random.uniform(-0.5, 0.5)
     else:
-        markup = _UNIFORM_MARKUP_SEVERITY[0]
-    return round(min(cost * markup, reserve_price), 2)
+        cover_offset = random.uniform(1.5, 4.0) + max(0.0, random.gauss(0, 1.5))
+        raw = des_bid + cover_offset
+    return round(max(cost * 1.01, min(raw, reserve_price)), 2)
 
 def calibrate_emergent_likelihoods(
     reserve_price: float = 100.0,
@@ -396,9 +450,11 @@ def calibrate_emergent_likelihoods(
 
     rng0 = random.Random(seed0)
     for ep in range(n_episodes):
+        prev_win = 60.0
         for _ in range(rounds_per_episode):
             costs = {f"f{i}": rng0.uniform(50.0, 60.0) for i in range(total_firms)}
-            bids = {k: _competitive_calibration_bidder(c, reserve_price) for k, c in costs.items()}
+            bids = {k: _competitive_calibration_bidder(c, reserve_price, prev_win) for k, c in costs.items()}
+            prev_win = min(bids.values())
             screens = compute_screens(bids, reserve_price=reserve_price)
             for k, v in screens.items():
                 samples[0][k].append(v)
@@ -407,16 +463,20 @@ def calibrate_emergent_likelihoods(
     for ep in range(n_episodes):
         archetype = rng1.choice(["target_price", "uniform_markup", "complementary"])
         _UNIFORM_MARKUP_SEVERITY[0] = rng1.uniform(1.10, 1.60)
-        designated = f"f0"
+        designated = "f0"
+        prev_win = 75.0
         for _ in range(rounds_per_episode):
             costs = {f"f{i}": rng1.uniform(50.0, 60.0) for i in range(total_firms)}
             if archetype == "target_price":
-                bids = {k: _collusive_calibration_bidder(c, reserve_price) for k, c in costs.items()}
+                bids = {k: _collusive_calibration_bidder(c, reserve_price, prev_win) for k, c in costs.items()}
             elif archetype == "uniform_markup":
                 bids = {k: _uniform_markup_calibration_bidder(c, reserve_price) for k, c in costs.items()}
             else:
-                bids = {k: _complementary_calibration_bidder(c, reserve_price, k == designated)
+                des_cost = costs[designated]
+                des_bid = _collusive_calibration_bidder(des_cost, reserve_price, prev_win)
+                bids = {k: _complementary_calibration_bidder(c, reserve_price, k == designated, des_bid)
                          for k, c in costs.items()}
+            prev_win = min(bids.values())
             screens = compute_screens(bids, reserve_price=reserve_price)
             for k, v in screens.items():
                 samples[1][k].append(v)
@@ -441,9 +501,11 @@ def calibrate_emergent_thresholds(
         reg = BayesianSequentialRegulator(
             l0, l1, RegulatorConfig(cusum_threshold=np.inf, sr_threshold=np.inf)
         )
+        prev_win = 60.0
         for _ in range(rounds_per_episode):
             costs = {f"f{i}": rng.uniform(50.0, 60.0) for i in range(total_firms)}
-            bids = {k: _competitive_calibration_bidder(c, reserve_price) for k, c in costs.items()}
+            bids = {k: _competitive_calibration_bidder(c, reserve_price, prev_win) for k, c in costs.items()}
+            prev_win = min(bids.values())
             reg.update(bids)
         max_cusum.append(max(h["cusum"] for h in reg.history))
         max_log_sr.append(max(h["log_shiryaev_roberts"] for h in reg.history))

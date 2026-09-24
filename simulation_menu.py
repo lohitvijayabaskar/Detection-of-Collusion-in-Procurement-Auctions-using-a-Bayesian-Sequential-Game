@@ -37,14 +37,16 @@ def run_menu():
             print("Invalid choice.")
 
 def run_custom_simulation():
+    from train_emergent_rl import RESERVE_PRICE, TOTAL_FIRMS
+
     try:
         rounds = int(input("\nEnter number of rounds to simulate (e.g., 20): "))
-        cartel_count = int(input("Enter number of cartel firms (0-20): "))
+        cartel_count = int(input(f"Enter number of cartel firms (0-{TOTAL_FIRMS}): "))
     except ValueError:
         print("Invalid input.")
         return
 
-    honest_count = 20 - cartel_count
+    honest_count = TOTAL_FIRMS - cartel_count
     
     print(f"\nInitializing simulation with {rounds} rounds, {cartel_count} cartel firms, and {honest_count} honest firms...")
     
@@ -53,7 +55,6 @@ def run_custom_simulation():
         calibrate_emergent_likelihoods,
         calibrate_emergent_thresholds,
     )
-    from train_emergent_rl import RESERVE_PRICE, TOTAL_FIRMS
     
     print("Calibrating regulator (Fast Mode)...")
     l0, l1 = calibrate_emergent_likelihoods(
@@ -90,9 +91,9 @@ def run_custom_simulation():
         actions = {}
         for a in env.agents:
             if a in cartel_firms:
-                act = np.array([5, 1, 1]) # Strategy 5: Cover Bid
+                act = np.array([5, 1, 1]) # Strategy 5: Camouflaged Cover Bidding
             else:
-                act = np.array([6, 0, 0]) # Strategy 6: Adaptive Undercut
+                act = np.array([3, 0, 0]) # Strategy 3: Strategic Adaptive Undercutting
             actions[a] = act
 
         obs, rewards, terms, truncs, infos = env.step(actions)

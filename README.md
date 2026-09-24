@@ -13,19 +13,20 @@ If the regulator detects anomalous bidding patterns indicative of collusion, it 
 ## Implementation Details & Technicalities
 
 ### 1. Multi-Discrete Action Spaces
-Firms do not simply choose a continuous markup. Instead, they operate in a `MultiDiscrete([6, 2, 2])` action space representing:
-- **Bidding Strategy (0-5)**: The firm's choice of economic bidding behaviour.
+Firms do not simply choose a continuous markup. Instead, they operate in a `MultiDiscrete([7, 2, 2])` action space representing:
+- **Bidding Strategy (0-6)**: The firm's choice of dynamic economic bidding behavior.
 - **Admission Vote (0-1)**: The firm's vote on how the cartel should admit new members.
 - **Punishment Vote (0-1)**: The firm's vote on how the cartel should punish defectors.
 
-### 2. Firm Strategies
-Firms can choose between several honest and dishonest economic strategies every round:
-- **0: Honest Bertrand:** Bids aggressively near actual cost to undercut competitors.
-- **1: Honest Cournot (Low):** Bids with a low, competitive markup.
-- **2: Honest Cournot (High):** Bids with a moderate markup.
-- **3: Honest Random:** Bids with highly variable noise, introducing unpredictability.
-- **4: Dishonest Target Price:** Bids near the regulator's reserve price (maximally collusive).
-- **5: Dishonest Cover Bid:** If the firm is the "designated winner" of the cartel, it bids near cost to secure the win. Otherwise, it intentionally bids high to create a "cover" for the designated winner.
+### 2. Overhauled Firm Strategies (Dynamic & History-Aware)
+Firms dynamically calculate bids based on past auction clearing history, cost structure, and competitor behavior rather than static predefined multiplier ranges:
+- **0: Honest Bertrand (Max -> Markdown):** Bids the maximum price (Reserve Price) in Round 1, then applies a competitive markdown ($1\%-3\%$) from the previous market clearing price in subsequent rounds.
+- **1: Adaptive Best-Response:** Empirical surplus maximization ($b_i = c_i + \lambda(\bar{W} - c_i)$) based on historical winning bid distribution.
+- **2: Dynamic Margin Tracking:** Market-trend adaptive pricing where profit margin expands/compresses dynamically with overall market clearing trends.
+- **3: Strategic Adaptive Undercutting:** Dynamic price shading relative to the gap between previous winning bid and private cost ($b_i = \text{prev\_win} \times (1 - u)$).
+- **4: Cartel Evasive Target Pricing:** Market-anchored collusive rent seeking ($\min(0.90R, 1.03\bar{W})$) with natural noise to evade static detection.
+- **5: Cartel Camouflaged Cover Bidding:** Sophisticated cartel coordination. The designated winner bids the collusive target price ($B_{\text{target}}$), while cover bidders bid closely trailing cover bids ($B_{\text{target}} + \Delta_i + \eta_i$) with realistic variance. Cover bids stay strictly higher than the winner's bid while blending into the competitive bid distribution to evade regulator anti-trust screens.
+- **6: Tacit Collusion / Focal Point Bidding:** Tacit price leadership where firms anchor bids around the running median of historical winning prices with small firm-specific offsets.
 
 ### 3. Cartel Mechanics
 Cartel behaviour is not scripted top-down; it is dynamically managed by a `Cartel` class that processes the firms' votes to determine collective policies:

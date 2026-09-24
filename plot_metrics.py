@@ -48,7 +48,7 @@ def plot_metrics():
     # 3. Strategy Distribution
     ax3 = axes[2]
     strats = ['strat_0_pct', 'strat_1_pct', 'strat_2_pct', 'strat_3_pct', 'strat_4_pct', 'strat_5_pct', 'strat_6_pct']
-    labels = ['0: Honest Bertrand', '1: Cournot Low', '2: Cournot High', '3: Random', '4: Target Price', '5: Cover Bid', '6: Adaptive Undercut']
+    labels = ['0: Honest Bertrand (Max->Markdown)', '1: Adaptive Best-Response', '2: Dynamic Margin Track', '3: Strategic Undercut', '4: Evasive Target Price', '5: Camouflaged Cover', '6: Tacit Focal Point']
     
     # Filter only columns that exist
     available_strats = [s for s in strats if s in df.columns]

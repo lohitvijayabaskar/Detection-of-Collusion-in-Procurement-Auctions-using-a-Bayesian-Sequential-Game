@@ -42,6 +42,7 @@ from emergent_procurement_env import (
 ROUNDS_PER_EPISODE = 20
 TOTAL_FIRMS = 20
 RESERVE_PRICE = 100.0
+NUM_ITERATIONS = 100
 CHECKPOINT_DIR = os.path.abspath("./procurement_model_checkpoint")
 COADAPTATION_LOG = os.path.abspath("./coadaptation_log.csv")
 
@@ -200,7 +201,7 @@ def main():
         print("\n---> No existing checkpoint found. Training from scratch...")
 
     print("\n" + "=" * 60)
-    print(" STARTING TRAINING LOOP (100 ITERATIONS, EMERGENT ENV)")
+    print(f" STARTING TRAINING LOOP ({NUM_ITERATIONS} ITERATIONS, {TOTAL_FIRMS} FIRMS)")
     print("=" * 60)
 
     with open(COADAPTATION_LOG, "w", newline="") as f:
@@ -211,7 +212,7 @@ def main():
                           "strat_0_pct", "strat_1_pct", "strat_2_pct", 
                           "strat_3_pct", "strat_4_pct", "strat_5_pct", "strat_6_pct"])
 
-        for i in range(1, 101):
+        for i in range(1, NUM_ITERATIONS + 1):
             result = algo.train()
 
             if "env_runners" in result and "policy_reward_mean" in result["env_runners"]:
