@@ -1,14 +1,20 @@
 import os
+import sys
+
+# Add the project root to the python path so it can find the src/ package
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+import os
 
 import ray
 from ray.rllib.algorithms.ppo import PPOConfig
 from ray.tune.registry import register_env
+from train_emergent_rl import (CHECKPOINT_DIR, RESERVE_PRICE,
+                               ROUNDS_PER_EPISODE, TOTAL_FIRMS, env_creator)
 
 from src.emergent_procurement_env import (ProcurementEmergentEnv,
                                           calibrate_emergent_likelihoods,
                                           calibrate_emergent_thresholds)
-from train_emergent_rl import (CHECKPOINT_DIR, RESERVE_PRICE,
-                               ROUNDS_PER_EPISODE, TOTAL_FIRMS, env_creator)
 
 
 def evaluate_model():

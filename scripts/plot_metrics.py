@@ -1,10 +1,20 @@
 import os
+import sys
+
+# Add the project root to the python path so it can find the src/ package
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+import os
 
 import matplotlib.pyplot as plt
 import pandas as pd
 
-LOG_FILE = "results/coadaptation_log.csv"
-OUTPUT_FILE = "results/metrics_plot.png"
+LOG_FILE = (
+    os.path.join(os.path.dirname(__file__), "..", "results") + "/coadaptation_log.csv"
+)
+OUTPUT_FILE = (
+    os.path.join(os.path.dirname(__file__), "..", "results") + "/metrics_plot.png"
+)
 
 
 def plot_metrics():

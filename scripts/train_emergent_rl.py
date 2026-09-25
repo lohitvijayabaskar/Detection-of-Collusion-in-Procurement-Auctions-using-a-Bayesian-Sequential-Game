@@ -1,3 +1,9 @@
+import os
+import sys
+
+# Add the project root to the python path so it can find the src/ package
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 """
 train_emergent_rl.py
 ====================================================================
@@ -42,7 +48,9 @@ TOTAL_FIRMS = 20
 RESERVE_PRICE = 100.0
 NUM_ITERATIONS = 100
 CHECKPOINT_DIR = os.path.abspath("./procurement_model_checkpoint")
-COADAPTATION_LOG = os.path.abspath("./results/coadaptation_log.csv")
+COADAPTATION_LOG = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "results") + "/coadaptation_log.csv"
+)
 
 
 def env_creator(config):

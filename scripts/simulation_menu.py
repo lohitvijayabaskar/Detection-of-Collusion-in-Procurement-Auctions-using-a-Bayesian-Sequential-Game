@@ -1,3 +1,9 @@
+import os
+import sys
+
+# Add the project root to the python path so it can find the src/ package
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import random
 import sys
 
@@ -242,7 +248,10 @@ def run_custom_simulation():
     ax3.legend()
 
     plt.tight_layout()
-    plot_path = "results/custom_simulation_plot.png"
+    plot_path = (
+        os.path.join(os.path.dirname(__file__), "..", "results")
+        + "/custom_simulation_plot.png"
+    )
     plt.savefig(plot_path)
     print(f"\nSaved simulation graph to {plot_path}")
     # plt.show() # Optional: displays window if running in GUI

@@ -1,3 +1,9 @@
+import os
+import sys
+
+# Add the project root to the python path so it can find the src/ package
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import random
 
 import matplotlib.pyplot as plt
@@ -213,7 +219,11 @@ def run_benchmarks():
     ax1.grid(True, alpha=0.3, axis="y")
 
     plt.tight_layout()
-    plt.savefig("results/regulator_benchmark.png", dpi=300)
+    plt.savefig(
+        os.path.join(os.path.dirname(__file__), "..", "results")
+        + "/regulator_benchmark.png",
+        dpi=300,
+    )
     print("\nSaved benchmark graph to results/regulator_benchmark.png")
 
 
