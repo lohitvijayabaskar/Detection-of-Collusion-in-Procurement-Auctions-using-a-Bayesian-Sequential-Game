@@ -79,7 +79,7 @@ def evaluate_and_plot_real_metrics(num_episodes=5):
             policies={"shared_policy": (None, obs_space, act_space, {})},
             policy_mapping_fn=policy_mapping_fn,
         )
-        .env_runners(num_env_runners=1, explore=False)
+        .env_runners(num_env_runners=1, explore=True)
         .resources(num_gpus=0)
     )
     algo = config.build_algo()
@@ -113,7 +113,7 @@ def evaluate_and_plot_real_metrics(num_episodes=5):
         for r in range(1, ROUNDS_PER_EPISODE + 1):
             actions = {
                 a: algo.compute_single_action(
-                    observation=obs[a], policy_id="shared_policy", explore=False
+                    observation=obs[a], policy_id="shared_policy", explore=True
                 )
                 for a in env.agents
             }
