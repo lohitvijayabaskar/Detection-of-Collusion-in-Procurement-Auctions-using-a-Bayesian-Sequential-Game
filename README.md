@@ -1,6 +1,6 @@
 # Detection of Collusion in Procurement Auctions using a Bayesian Sequential Game
 
-This project explores the intersection of **Multi-Agent Reinforcement Learning (MARL)** and **Mechanism Design**, specifically focusing on how autonomous bidding agents adapt to—and attempt to evade—automated regulatory oversight in procurement auctions through dynamic cartel formation and discrete strategy selection.
+This project explores the intersection of **Multi-Agent Reinforcement Learning (MARL)** and **Mechanism Design**, specifically focusing on how autonomous bidding agents adapt to—and attempt to evade—automated regulatory oversight in procurement auctions.
 
 ## Overview
 
@@ -10,41 +10,79 @@ Simultaneously, a **Bayesian Sequential Regulator** actively monitors the auctio
 
 If the regulator detects anomalous bidding patterns indicative of collusion, it triggers an alarm and levies severe fines on the suspicious firms.
 
-## Implementation Details & Technicalities
+## Emergent Behavior (The "Cat and Mouse" Game)
+Because the regulator operates *in-the-loop* (agents observe the regulator's suspicion levels), the RL agents learn to co-adapt. When competitive margins are squeezed to zero, the agents dynamically abandon fair competition and organically learn textbook **Cover Bidding** strategies (where one agent bids low to win, while others submit intentionally inflated fake bids) in an attempt to manipulate the market, resulting in a fascinating adversarial dynamic.
 
-### 1. Multi-Discrete Action Spaces
-Firms do not simply choose a continuous markup. Instead, they operate in a `MultiDiscrete([7, 2, 2])` action space representing:
-- **Bidding Strategy (0-6)**: The firm's choice of dynamic economic bidding behavior.
-- **Admission Vote (0-1)**: The firm's vote on how the cartel should admit new members.
-- **Punishment Vote (0-1)**: The firm's vote on how the cartel should punish defectors.
+---
 
-### 2. Overhauled Firm Strategies (Dynamic & History-Aware)
-Firms dynamically calculate bids based on past auction clearing history, cost structure, and competitor behavior rather than static predefined multiplier ranges:
-- **0: Honest Bertrand (Max -> Markdown):** Bids the maximum price (Reserve Price) in Round 1, then applies a competitive markdown ($1\%-3\%$) from the previous market clearing price in subsequent rounds.
-- **1: Adaptive Best-Response:** Empirical surplus maximization ($b_i = c_i + \lambda(\bar{W} - c_i)$) based on historical winning bid distribution.
-- **2: Dynamic Margin Tracking:** Market-trend adaptive pricing where profit margin expands/compresses dynamically with overall market clearing trends.
-- **3: Strategic Adaptive Undercutting:** Dynamic price shading relative to the gap between previous winning bid and private cost ($b_i = \text{prev\_win} \times (1 - u)$).
-- **4: Cartel Evasive Target Pricing:** Market-anchored collusive rent seeking ($\min(0.90R, 1.03\bar{W})$) with natural noise to evade static detection.
-- **5: Cartel Camouflaged Cover Bidding:** Sophisticated cartel coordination. The designated winner bids the collusive target price ($B_{\text{target}}$), while cover bidders bid closely trailing cover bids ($B_{\text{target}} + \Delta_i + \eta_i$) with realistic variance. Cover bids stay strictly higher than the winner's bid while blending into the competitive bid distribution to evade regulator anti-trust screens.
-- **6: Tacit Collusion / Focal Point Bidding:** Tacit price leadership where firms anchor bids around the running median of historical winning prices with small firm-specific offsets.
+## Newer Additions & The Upgraded Regulator
+We have recently introduced significant upgrades to the Bayesian Regulator, transitioning from a legacy "global-alarm" system to a highly surgical detection framework. 
 
-### 3. Cartel Mechanics
-Cartel behaviour is not scripted top-down; it is dynamically managed by a `Cartel` class that processes the firms' votes to determine collective policies:
-- **Voting Mechanism**: Each round, current cartel members cast votes via their action space. The majority vote determines the active Admission and Punishment policies for the round.
-- **Admission Policies**: Firms employing dishonest strategies are treated as applying for the cartel. The cartel may admit them unconditionally (Open Admission) or only if their cost is below the market average (Selective Admission).
-- **Punishment Policies**: If a cartel member undercuts the designated winner (defecting), they are punished based on the voted policy. Punishments range from a temporary 1-round ban (Tit-for-Tat) to a permanent ban (Grim Trigger).
-- **Designated Winner**: The cartel designates the member with the lowest private cost as the winner for the current round, allowing them to optimize collective profit.
+The upgraded regulator features:
+1. **Surgical Firm-Level Posteriors**: Tracks suspicion probabilities for *individual firms* rather than just triggering a global alarm, allowing fines to be targeted only at bad actors.
+2. **Rotation Detection (Entropy Tracking)**: Uses Shannon Entropy on the historical winner distribution to detect sophisticated "Bid-Rotation" cartels. If entropy drops too low, it signals that a small sub-group is artificially rotating wins.
+3. **Dynamic Engineering Estimates**: Evaluates bids against a dynamic, contextual engineering estimate rather than a static reserve price.
 
-### 4. Co-adaptation Loop
-Because the regulator operates *in-the-loop* (agents observe the regulator's suspicion levels), the RL agents learn to co-adapt. When competitive margins are squeezed to zero, the agents dynamically learn to balance between selecting Dishonest strategies to maximize profit and Honest strategies to avoid regulatory fines.
+---
 
-## Files
-- `emergent_procurement_env.py`: The PettingZoo ParallelEnv simulating the auction, firm strategies, cartel mechanics, and enforcing the RL observation/action spaces.
-- `regulator.py`: The Bayesian sequential change-point detection algorithm.
-- `train_emergent_rl.py`: The Ray RLlib PPO training loop. Logs the distribution of chosen strategies to `coadaptation_log.csv`.
-- `eval_emergent.py`: The evaluation script to observe the converged policies and regulator alarms in action.
+## Key Metrics & Benchmark Results
+Our evaluation scripts generate several key metrics (stored in the `results/` folder) to benchmark the performance of the system against advanced Bid-Rotation and Camouflage Cover Bidding cartels:
 
-## Running the Code
-1. Install dependencies: `pip install -r requirements.txt`
-2. Train the agents (100 iterations): `python train_emergent_rl.py`
-3. Evaluate the equilibrium: `python eval_emergent.py`
+1. **False Positives (Innocent Firms Fined)**: 
+   The legacy regulator relied on global alarms, unfairly punishing all firms when a cartel was detected. The upgraded regulator reduces false positives to nearly zero by issuing surgical fines.
+2. **Time to Detection (TTD)**:
+   The upgraded regulator utilizes entropy tracking to detect complex bid-rotation cartels significantly faster than legacy models (which often evaded detection indefinitely).
+3. **Cumulative Cartel Fines**:
+   By rapidly identifying cartel members, the upgraded regulator maximizes penalties levied against bad actors (visualized in `results/regulator_benchmark.png`).
+4. **Firm Strategy Distribution**:
+   Tracks how RL agents co-adapt over time, converging from random exploration into highly coordinated emergent cover bidding (visualized in `results/metrics_plot.png`).
+
+---
+
+## Project Structure
+- `src/`: Contains the core environment (`emergent_procurement_env.py`) and regulator logic (`regulator.py`).
+- `scripts/`: Executable Python scripts for training, evaluating, plotting, and benchmarking.
+- `results/`: Autogenerated CSV logs and PNG metric plots.
+- `docs/`: Relevant research papers and documentation.
+- `procurement_model_checkpoint/`: The saved weights of the trained PPO neural network.
+
+---
+
+## Basic Requirements
+- **Python 3.8+**
+- Install all dependencies via:
+  ```bash
+  pip install -r requirements.txt
+  ```
+  *(Key dependencies include: `ray[rllib]`, `scipy`, `numpy`, `matplotlib`, `pandas`, `black`, `isort`)*
+
+---
+
+## How to Run the Code
+
+Because the codebase is cleanly modularized, all executable scripts should be run from the root directory to properly route outputs to the `results/` folder.
+
+**1. Train the RL Agents** (Witness emergent collusion in real-time):
+```bash
+python scripts/train_emergent_rl.py
+```
+
+**2. Evaluate the Converged Policy** (Run a step-by-step auction with the trained AI):
+```bash
+python scripts/eval_emergent.py
+```
+
+**3. Benchmark the Regulator** (Compare Legacy vs. Upgraded detection metrics):
+```bash
+python scripts/benchmark_regulator.py
+```
+
+**4. Plot Metrics & Strategy Distribution** (Generate visualizations of the co-adaptation):
+```bash
+python scripts/plot_metrics.py
+```
+
+**5. Custom Interactive Simulation** (Manually test the regulator's response to custom scenarios):
+```bash
+python scripts/simulation_menu.py
+```
