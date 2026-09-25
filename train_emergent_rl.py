@@ -29,22 +29,20 @@ import os
 
 import numpy as np
 import ray
-from ray.tune.registry import register_env
-from ray.rllib.env.wrappers.pettingzoo_env import ParallelPettingZooEnv
 from ray.rllib.algorithms.ppo import PPOConfig
+from ray.rllib.env.wrappers.pettingzoo_env import ParallelPettingZooEnv
+from ray.tune.registry import register_env
 
-from emergent_procurement_env import (
-    ProcurementEmergentEnv,
-    calibrate_emergent_likelihoods,
-    calibrate_emergent_thresholds,
-)
+from src.emergent_procurement_env import (ProcurementEmergentEnv,
+                                          calibrate_emergent_likelihoods,
+                                          calibrate_emergent_thresholds)
 
 ROUNDS_PER_EPISODE = 20
 TOTAL_FIRMS = 20
 RESERVE_PRICE = 100.0
 NUM_ITERATIONS = 100
 CHECKPOINT_DIR = os.path.abspath("./procurement_model_checkpoint")
-COADAPTATION_LOG = os.path.abspath("./coadaptation_log.csv")
+COADAPTATION_LOG = os.path.abspath("./results/coadaptation_log.csv")
 
 
 def env_creator(config):
@@ -65,26 +63,31 @@ def evaluate_coadaptation(algo, l0, l1, cusum_h, sr_h, n_episodes: int = 5) -> d
     """Freeze the current policy and roll out a few episodes to measure
     where the firm-side / regulator-side equilibrium currently sits."""
     env = ProcurementEmergentEnv(
-        reserve_price=RESERVE_PRICE, total_firms=TOTAL_FIRMS,
+        reserve_price=RESERVE_PRICE,
+        total_firms=TOTAL_FIRMS,
         rounds_per_episode=ROUNDS_PER_EPISODE,
-        likelihood_h0=l0, likelihood_h1=l1,
-        cusum_threshold=cusum_h, sr_threshold=sr_h,
+        likelihood_h0=l0,
+        likelihood_h1=l1,
+        cusum_threshold=cusum_h,
+        sr_threshold=sr_h,
     )
 
     markups, posteriors, alarms, profits, strategies = [], [], [], [], []
     cartel_sizes, buyer_costs, allocative_efficiencies = [], [], []
     tp, fp, tn, fn = 0, 0, 0, 0
-    
+
     for ep in range(n_episodes):
         obs, _ = env.reset(seed=1000 + ep)
         done = False
         while not done:
             actions = {
-                a: algo.compute_single_action(observation=obs[a], policy_id="shared_policy", explore=False)
+                a: algo.compute_single_action(
+                    observation=obs[a], policy_id="shared_policy", explore=False
+                )
                 for a in env.agents
             }
             obs, rewards, terms, truncs, infos = env.step(actions)
-            
+
             # Track agent-level metrics
             costs = {}
             for a, info in infos.items():
@@ -93,7 +96,7 @@ def evaluate_coadaptation(algo, l0, l1, cusum_h, sr_h, n_episodes: int = 5) -> d
                 markups.append(info["markup"])
                 strategies.append(info["strategy"])
                 costs[a] = info["cost"]
-                
+
             # Track global/economic metrics
             g = infos["__common__"]
             posteriors.append(g["posterior_collusion"])
@@ -101,12 +104,12 @@ def evaluate_coadaptation(algo, l0, l1, cusum_h, sr_h, n_episodes: int = 5) -> d
             profits.append(sum(rewards.values()))
             cartel_sizes.append(g["cartel_size"])
             buyer_costs.append(g["winning_bid"])
-            
+
             # Allocative Efficiency: Did the firm with the absolute lowest cost win?
             min_cost = min(costs.values())
             winner_cost = costs[g["winner"]]
             allocative_efficiencies.append(1 if winner_cost == min_cost else 0)
-            
+
             # Confusion matrix tracking
             is_cartel_active = g["cartel_size"] > 1
             if g["alarm"] and is_cartel_active:
@@ -117,14 +120,16 @@ def evaluate_coadaptation(algo, l0, l1, cusum_h, sr_h, n_episodes: int = 5) -> d
                 tn += 1
             elif not g["alarm"] and is_cartel_active:
                 fn += 1
-                
+
             done = all(terms.values())
 
     strategy_counts = {i: 0 for i in range(7)}
     for s in strategies:
         strategy_counts[s] = strategy_counts.get(s, 0) + 1
     total_actions = len(strategies) if strategies else 1
-    strategy_dist = {f"strat_{k}_pct": (v / total_actions) * 100 for k, v in strategy_counts.items()}
+    strategy_dist = {
+        f"strat_{k}_pct": (v / total_actions) * 100 for k, v in strategy_counts.items()
+    }
 
     tpr = (tp / (tp + fn)) if (tp + fn) > 0 else 0.0
     fpr = (fp / (fp + tn)) if (fp + tn) > 0 else 0.0
@@ -149,20 +154,28 @@ def main():
 
     print("Calibrating regulator H0/H1 likelihoods from reference bidders...")
     l0, l1 = calibrate_emergent_likelihoods(
-        reserve_price=RESERVE_PRICE, total_firms=TOTAL_FIRMS,
-        n_episodes=150, rounds_per_episode=ROUNDS_PER_EPISODE,
+        reserve_price=RESERVE_PRICE,
+        total_firms=TOTAL_FIRMS,
+        n_episodes=150,
+        rounds_per_episode=ROUNDS_PER_EPISODE,
     )
     print("Calibrating alarm thresholds against the competitive reference...")
     cusum_h, sr_h = calibrate_emergent_thresholds(
-        l0, l1, reserve_price=RESERVE_PRICE, total_firms=TOTAL_FIRMS,
-        n_episodes=100, rounds_per_episode=ROUNDS_PER_EPISODE,
+        l0,
+        l1,
+        reserve_price=RESERVE_PRICE,
+        total_firms=TOTAL_FIRMS,
+        n_episodes=100,
+        rounds_per_episode=ROUNDS_PER_EPISODE,
     )
     print(f"  -> CUSUM threshold h = {cusum_h:.3f}, SR threshold A = {sr_h:.3f}")
 
     env_name = "emergent_procurement_env"
     env_config = {
-        "likelihood_h0": l0, "likelihood_h1": l1,
-        "cusum_threshold": cusum_h, "sr_threshold": sr_h,
+        "likelihood_h0": l0,
+        "likelihood_h1": l1,
+        "cusum_threshold": cusum_h,
+        "sr_threshold": sr_h,
     }
     register_env(env_name, env_creator)
 
@@ -206,17 +219,39 @@ def main():
 
     with open(COADAPTATION_LOG, "w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(["iteration", "reward_mean", "collusion_index",
-                          "mean_posterior", "alarm_rate", "tpr", "fpr", "mean_round_profit",
-                          "avg_cartel_size", "avg_buyer_cost", "allocative_efficiency",
-                          "strat_0_pct", "strat_1_pct", "strat_2_pct", 
-                          "strat_3_pct", "strat_4_pct", "strat_5_pct", "strat_6_pct"])
+        writer.writerow(
+            [
+                "iteration",
+                "reward_mean",
+                "collusion_index",
+                "mean_posterior",
+                "alarm_rate",
+                "tpr",
+                "fpr",
+                "mean_round_profit",
+                "avg_cartel_size",
+                "avg_buyer_cost",
+                "allocative_efficiency",
+                "strat_0_pct",
+                "strat_1_pct",
+                "strat_2_pct",
+                "strat_3_pct",
+                "strat_4_pct",
+                "strat_5_pct",
+                "strat_6_pct",
+            ]
+        )
 
         for i in range(1, NUM_ITERATIONS + 1):
             result = algo.train()
 
-            if "env_runners" in result and "policy_reward_mean" in result["env_runners"]:
-                reward = result["env_runners"]["policy_reward_mean"].get("shared_policy", 0.0)
+            if (
+                "env_runners" in result
+                and "policy_reward_mean" in result["env_runners"]
+            ):
+                reward = result["env_runners"]["policy_reward_mean"].get(
+                    "shared_policy", 0.0
+                )
             elif "policy_reward_mean" in result:
                 reward = result["policy_reward_mean"].get("shared_policy", 0.0)
             else:
@@ -224,15 +259,34 @@ def main():
 
             if i % 10 == 0 or i == 1:
                 co = evaluate_coadaptation(algo, l0, l1, cusum_h, sr_h, n_episodes=5)
-                print(f"Iteration {i:03d} | RewardMean={reward:7.2f} | "
-                      f"BuyerCost=${co['avg_buyer_cost']:.2f} | AllocEff={co['allocative_efficiency']:.2f} | "
-                      f"Alarm={co['alarm_rate']:.3f} (TPR:{co['tpr']:.2f}, FPR:{co['fpr']:.2f}) | "
-                      f"Strats: 0:{co['strat_0_pct']:.0f}% 4:{co['strat_4_pct']:.0f}% 5:{co['strat_5_pct']:.0f}% 6:{co['strat_6_pct']:.0f}%")
-                writer.writerow([i, reward, co["collusion_index"], co["mean_posterior"],
-                                  co["alarm_rate"], co["tpr"], co["fpr"], co["mean_round_profit"],
-                                  co["avg_cartel_size"], co["avg_buyer_cost"], co["allocative_efficiency"],
-                                  co["strat_0_pct"], co["strat_1_pct"], co["strat_2_pct"],
-                                  co["strat_3_pct"], co["strat_4_pct"], co["strat_5_pct"], co["strat_6_pct"]])
+                print(
+                    f"Iteration {i:03d} | RewardMean={reward:7.2f} | "
+                    f"BuyerCost=${co['avg_buyer_cost']:.2f} | AllocEff={co['allocative_efficiency']:.2f} | "
+                    f"Alarm={co['alarm_rate']:.3f} (TPR:{co['tpr']:.2f}, FPR:{co['fpr']:.2f}) | "
+                    f"Strats: 0:{co['strat_0_pct']:.0f}% 4:{co['strat_4_pct']:.0f}% 5:{co['strat_5_pct']:.0f}% 6:{co['strat_6_pct']:.0f}%"
+                )
+                writer.writerow(
+                    [
+                        i,
+                        reward,
+                        co["collusion_index"],
+                        co["mean_posterior"],
+                        co["alarm_rate"],
+                        co["tpr"],
+                        co["fpr"],
+                        co["mean_round_profit"],
+                        co["avg_cartel_size"],
+                        co["avg_buyer_cost"],
+                        co["allocative_efficiency"],
+                        co["strat_0_pct"],
+                        co["strat_1_pct"],
+                        co["strat_2_pct"],
+                        co["strat_3_pct"],
+                        co["strat_4_pct"],
+                        co["strat_5_pct"],
+                        co["strat_6_pct"],
+                    ]
+                )
                 f.flush()
 
     print(f"\n---> Saving checkpoint to {CHECKPOINT_DIR}...")

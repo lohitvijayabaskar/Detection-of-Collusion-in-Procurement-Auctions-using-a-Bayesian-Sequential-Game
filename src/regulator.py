@@ -76,9 +76,10 @@ false alarm (ARL0) in the change-point-detection literature.
 
 from __future__ import annotations
 
-import numpy as np
 from dataclasses import dataclass, field
 from typing import Callable, Dict, List, Optional, Tuple
+
+import numpy as np
 from scipy import stats
 from scipy.special import expit, logsumexp
 
@@ -92,7 +93,10 @@ LLR_CLIP = 8.0
 # 1. Screens: the only thing the regulator ever sees
 # ====================================================================
 
-def compute_screens(bids: Dict[str, float], reserve_price: Optional[float] = None) -> Dict[str, float]:
+
+def compute_screens(
+    bids: Dict[str, float], eng_estimate: Optional[float] = None
+) -> Dict[str, float]:
     """
     Map a round's public bid vector to a small set of sufficient
     statistics ("screens") drawn from the empirical-IO collusion-
@@ -106,13 +110,10 @@ def compute_screens(bids: Dict[str, float], reserve_price: Optional[float] = Non
     markup over its own (private) cost is, by construction, statistically
     indistinguishable from competitive bidding under these three alone
     -- no amount of calibration data fixes that, it's a property of the
-    statistics. `level` closes that gap: bid-to-reserve-price is the
+    statistics. `level` closes that gap: bid-to-engineering-estimate is the
     standard "bid / engineer's estimate" anchor from the empirical
-    screening literature, using the reserve price (which is announced
-    to bidders, i.e. legitimately public) as the estimate. It is NOT
-    scale-invariant, so a uniform markup inflation now shows up
-    directly as a rightward shift in this feature even when it is
-    invisible to the other three.
+    screening literature. It is NOT scale-invariant, so a uniform markup
+    inflation now shows up directly as a rightward shift in this feature.
     """
     values = np.sort(np.array(list(bids.values()), dtype=float))
     n = len(values)
@@ -134,8 +135,8 @@ def compute_screens(bids: Dict[str, float], reserve_price: Optional[float] = Non
         skew = 0.0
 
     screens = {"cv": cv, "norm_diff": norm_diff, "skew": skew}
-    if reserve_price is not None and reserve_price > 0:
-        screens["level"] = float(mean / reserve_price)
+    if eng_estimate is not None and eng_estimate > 0:
+        screens["level"] = float(mean / eng_estimate)
     return screens
 
 
@@ -166,6 +167,7 @@ def suspect_scores(bids: Dict[str, float]) -> Dict[str, float]:
 # ====================================================================
 # 2. Calibration: turn simulation into likelihoods
 # ====================================================================
+
 
 class KDELikelihood:
     """Per-feature Gaussian KDE likelihood, factorized (naive-Bayes
@@ -204,11 +206,13 @@ def force_regime(env, cartel_active: bool) -> None:
         env.cartels = {k: [] for k in env.cartels}
 
 
-def calibrate(env_factory: Callable[[], object],
-              policy_fn: Callable[[np.ndarray], np.ndarray],
-              n_episodes: int = 400,
-              rounds_per_episode: int = 5,
-              seed0: int = 0) -> Tuple[KDELikelihood, KDELikelihood]:
+def calibrate(
+    env_factory: Callable[[], object],
+    policy_fn: Callable[[np.ndarray], np.ndarray],
+    n_episodes: int = 400,
+    rounds_per_episode: int = 5,
+    seed0: int = 0,
+) -> Tuple[KDELikelihood, KDELikelihood]:
     """
     Monte-Carlo calibration of P(screens | H0) and P(screens | H1) by
     forcing the environment into each regime and rolling out the
@@ -217,8 +221,10 @@ def calibrate(env_factory: Callable[[], object],
     env_factory: zero-arg callable returning a fresh ProcurementHybridEnv
     policy_fn:   maps a single agent's observation array -> action array
     """
-    samples = {0: {"cv": [], "norm_diff": [], "skew": []},
-               1: {"cv": [], "norm_diff": [], "skew": []}}
+    samples = {
+        0: {"cv": [], "norm_diff": [], "skew": []},
+        1: {"cv": [], "norm_diff": [], "skew": []},
+    }
 
     for hyp in (0, 1):
         for ep in range(n_episodes):
@@ -264,13 +270,20 @@ def _extract_bids(infos, actions, env) -> Dict[str, float]:
 # 3. Online sequential regulator
 # ====================================================================
 
+
 @dataclass
 class RegulatorConfig:
-    prior_h1: float = 0.10          # prior P(cartel active) at t=0
+    prior_h1: float = 0.10  # prior P(cartel active) at t=0
     transition: Optional[np.ndarray] = None  # 2x2 Markov kernel over H, or None
-    cusum_threshold: float = 8.0    # overwritten by calibrate_alarm_threshold
-    sr_threshold: float = 50.0      # overwritten by calibrate_alarm_threshold
-    reserve_price: Optional[float] = None  # enables the level (bid/reserve) screen
+    cusum_threshold: float = 8.0  # overwritten by calibrate_alarm_threshold
+    sr_threshold: float = 50.0  # overwritten by calibrate_alarm_threshold
+    eng_estimate_default: Optional[float] = (
+        None  # fallback for the level (bid/eng_estimate) screen
+    )
+    rotation_window: int = 15  # window size for tracking bid-rotation
+    entropy_threshold: float = (
+        1.2  # Shannon entropy threshold (lower = more organized/cartel-like)
+    )
 
 
 @dataclass
@@ -283,10 +296,14 @@ class BayesianSequentialRegulator:
     cusum: float = field(init=False, default=0.0)
     sr_stat: float = field(init=False, default=0.0)
     history: List[dict] = field(init=False, default_factory=list)
+    firm_posteriors: Dict[str, float] = field(init=False, default_factory=dict)
+    winner_history: List[str] = field(init=False, default_factory=list)
 
     def __post_init__(self):
         self.posterior = self.config.prior_h1
         self._log_sr = -np.inf  # log(0); logaddexp(0, -inf) = 0 on first update
+        self.firm_posteriors = {}
+        self.winner_history = []
 
     def log_likelihood_ratio(self, screens: Dict[str, float]) -> float:
         """Sum of per-feature clipped log-likelihood-ratio contributions
@@ -295,18 +312,39 @@ class BayesianSequentialRegulator:
         unstable, unbounded swing in the sequential statistics."""
         total = 0.0
         for key, val in screens.items():
-            contrib = self.likelihood_h1.feature_logpdf(key, val) - \
-                      self.likelihood_h0.feature_logpdf(key, val)
+            contrib = self.likelihood_h1.feature_logpdf(
+                key, val
+            ) - self.likelihood_h0.feature_logpdf(key, val)
             total += float(np.clip(contrib, -LLR_CLIP, LLR_CLIP))
         return total
 
-    def update(self, bids: Dict[str, float]) -> dict:
-        screens = compute_screens(bids, reserve_price=self.config.reserve_price)
+    def update(
+        self, bids: Dict[str, float], eng_estimate: Optional[float] = None
+    ) -> dict:
+        if eng_estimate is None:
+            eng_estimate = self.config.eng_estimate_default
+
+        screens = compute_screens(bids, eng_estimate=eng_estimate)
         llr = self.log_likelihood_ratio(screens)
 
-        # All three statistics are propagated in log-space (log-odds /
-        # log-R) and only mapped back with expit / exp at the end, so
-        # they stay numerically stable even after long alarm runs.
+        # Track winner for Bid Rotation detection
+        if bids:
+            winner = min(bids, key=bids.get)
+            self.winner_history.append(winner)
+            if len(self.winner_history) > self.config.rotation_window:
+                self.winner_history.pop(0)
+
+        # Calculate Shannon Entropy of the winner window
+        entropy = 0.0
+        rotation_alarm = False
+        if len(self.winner_history) >= 10:
+            from collections import Counter
+
+            counts = Counter(self.winner_history)
+            probs = [c / len(self.winner_history) for c in counts.values()]
+            entropy = -sum(p * np.log(p) for p in probs)
+            if entropy < self.config.entropy_threshold:
+                rotation_alarm = True
 
         # (a) HMM-style Bayesian belief filter over H in {0,1}
         prior_odds = self.posterior / (1 - self.posterior + 1e-12)
@@ -331,6 +369,24 @@ class BayesianSequentialRegulator:
         self._log_sr = logsumexp([0.0, self._log_sr]) + llr
         self.sr_stat = float(np.exp(min(self._log_sr, 700.0)))
 
+        # (d) Individual Firm Suspicion Tracking
+        susp = suspect_scores(bids)
+        for agent, z in susp.items():
+            if agent not in self.firm_posteriors:
+                self.firm_posteriors[agent] = self.config.prior_h1
+
+            # Map the negative z-score (cover bid cluster) to a pseudo-LLR
+            firm_llr = float(np.clip(-z - 1.0, -2.0, 2.0))
+
+            f_prior_odds = self.firm_posteriors[agent] / (
+                1 - self.firm_posteriors[agent] + 1e-12
+            )
+            f_log_prior = np.log(f_prior_odds + 1e-300)
+            f_log_post = f_log_prior + firm_llr
+            self.firm_posteriors[agent] = min(
+                max(float(expit(f_log_post)), 1e-4), 1 - 1e-4
+            )
+
         result = {
             "screens": screens,
             "llr": llr,
@@ -340,16 +396,25 @@ class BayesianSequentialRegulator:
             "log_shiryaev_roberts": float(self._log_sr),
             "alarm_cusum": self.cusum > self.config.cusum_threshold,
             "alarm_sr": self._log_sr > np.log(max(self.config.sr_threshold, 1e-300)),
-            "suspects": suspect_scores(bids),
+            "alarm_rotation": rotation_alarm,
+            "entropy": entropy,
+            "suspects": susp,
+            "firm_posteriors": self.firm_posteriors.copy(),
         }
         self.history.append(result)
         return result
 
 
-def calibrate_alarm_threshold(env_factory, policy_fn, likelihood_h0, likelihood_h1,
-                               n_episodes: int = 300, rounds_per_episode: int = 5,
-                               false_alarm_rate: float = 0.05,
-                               seed0: int = 10_000) -> Tuple[float, float]:
+def calibrate_alarm_threshold(
+    env_factory,
+    policy_fn,
+    likelihood_h0,
+    likelihood_h1,
+    n_episodes: int = 300,
+    rounds_per_episode: int = 5,
+    false_alarm_rate: float = 0.05,
+    seed0: int = 10_000,
+) -> Tuple[float, float]:
     """
     Run the *null* regime (H0: no cartel) many times, track the running
     max of CUSUM and Shiryaev-Roberts, and set thresholds at the
@@ -364,9 +429,11 @@ def calibrate_alarm_threshold(env_factory, policy_fn, likelihood_h0, likelihood_
         force_regime(env, cartel_active=False)
         obs = env._get_obs()
 
-        reg = BayesianSequentialRegulator(likelihood_h0, likelihood_h1,
-                                           RegulatorConfig(cusum_threshold=np.inf,
-                                                           sr_threshold=np.inf))
+        reg = BayesianSequentialRegulator(
+            likelihood_h0,
+            likelihood_h1,
+            RegulatorConfig(cusum_threshold=np.inf, sr_threshold=np.inf),
+        )
         for _ in range(rounds_per_episode):
             actions = {a: policy_fn(obs[a]) for a in env.agents}
             obs, _, terms, _, infos = env.step(actions)
@@ -387,11 +454,13 @@ def calibrate_alarm_threshold(env_factory, policy_fn, likelihood_h0, likelihood_
     return cusum_h, sr_h
 
 
-def calibrate_from_labeled_data(df,
-                                 tender_id_col: str = "tender_id",
-                                 bid_col: str = "bid",
-                                 label_col: str = "collusive",
-                                 min_bidders: int = 3) -> Tuple[KDELikelihood, KDELikelihood]:
+def calibrate_from_labeled_data(
+    df,
+    tender_id_col: str = "tender_id",
+    bid_col: str = "bid",
+    label_col: str = "collusive",
+    min_bidders: int = 3,
+) -> Tuple[KDELikelihood, KDELikelihood]:
     """
     Calibrate P(screens | H0) / P(screens | H1) directly from real,
     labeled procurement data, instead of from the RL simulator. This is
@@ -411,8 +480,10 @@ def calibrate_from_labeled_data(df,
     that norm_diff/skew are comparable across contracts -- cv is
     already scale-invariant.
     """
-    samples = {0: {"cv": [], "norm_diff": [], "skew": []},
-               1: {"cv": [], "norm_diff": [], "skew": []}}
+    samples = {
+        0: {"cv": [], "norm_diff": [], "skew": []},
+        1: {"cv": [], "norm_diff": [], "skew": []},
+    }
 
     for _, grp in df.groupby(tender_id_col):
         if len(grp) < min_bidders:
@@ -445,17 +516,29 @@ def calibrate_from_labeled_data(df,
 # ====================================================================
 
 if __name__ == "__main__":
-    from hybrid_simulation_mock import ProcurementHybridEnv, mock_trained_rl_policy
+    from hybrid_simulation_mock import (ProcurementHybridEnv,
+                                        mock_trained_rl_policy)
 
     print("Calibrating H0 / H1 likelihoods from simulation...")
-    l0, l1 = calibrate(ProcurementHybridEnv, mock_trained_rl_policy,
-                        n_episodes=150, rounds_per_episode=5)
+    l0, l1 = calibrate(
+        ProcurementHybridEnv,
+        mock_trained_rl_policy,
+        n_episodes=150,
+        rounds_per_episode=5,
+    )
 
-    print("Calibrating alarm thresholds against the null regime "
-          "(target false-alarm rate = 5%)...")
-    cusum_h, sr_h = calibrate_alarm_threshold(ProcurementHybridEnv, mock_trained_rl_policy,
-                                               l0, l1, n_episodes=150,
-                                               false_alarm_rate=0.05)
+    print(
+        "Calibrating alarm thresholds against the null regime "
+        "(target false-alarm rate = 5%)..."
+    )
+    cusum_h, sr_h = calibrate_alarm_threshold(
+        ProcurementHybridEnv,
+        mock_trained_rl_policy,
+        l0,
+        l1,
+        n_episodes=150,
+        false_alarm_rate=0.05,
+    )
     print(f"  -> CUSUM threshold h = {cusum_h:.3f}")
     print(f"  -> Shiryaev-Roberts threshold A = {sr_h:.3f}")
 
@@ -463,7 +546,8 @@ if __name__ == "__main__":
     env = ProcurementHybridEnv()
     obs, infos = env.reset(seed=123)
     reg = BayesianSequentialRegulator(
-        l0, l1,
+        l0,
+        l1,
         RegulatorConfig(prior_h1=0.1, cusum_threshold=cusum_h, sr_threshold=sr_h),
     )
 
@@ -473,9 +557,12 @@ if __name__ == "__main__":
         bids = _extract_bids(step_infos, actions, env)
         result = reg.update(bids)
 
-        n_colluding = sum(1 for a in env.possible_agents
-                           if env.roles.get(a, "honest") != "honest")
-        print(f"round {r}: true #firms-in-cartel={n_colluding:2d} | "
-              f"P(cartel)={result['posterior_collusion']:.3f} | "
-              f"CUSUM={result['cusum']:6.2f} (alarm={result['alarm_cusum']}) | "
-              f"SR={result['shiryaev_roberts']:8.2f} (alarm={result['alarm_sr']})")
+        n_colluding = sum(
+            1 for a in env.possible_agents if env.roles.get(a, "honest") != "honest"
+        )
+        print(
+            f"round {r}: true #firms-in-cartel={n_colluding:2d} | "
+            f"P(cartel)={result['posterior_collusion']:.3f} | "
+            f"CUSUM={result['cusum']:6.2f} (alarm={result['alarm_cusum']}) | "
+            f"SR={result['shiryaev_roberts']:8.2f} (alarm={result['alarm_sr']})"
+        )

@@ -1,16 +1,14 @@
 import os
-import ray
-from ray.tune.registry import register_env
-from ray.rllib.algorithms.ppo import PPOConfig
 
-from emergent_procurement_env import (
-    ProcurementEmergentEnv,
-    calibrate_emergent_likelihoods,
-    calibrate_emergent_thresholds,
-)
-from train_emergent_rl import (
-    env_creator, RESERVE_PRICE, TOTAL_FIRMS, ROUNDS_PER_EPISODE, CHECKPOINT_DIR,
-)
+import ray
+from ray.rllib.algorithms.ppo import PPOConfig
+from ray.tune.registry import register_env
+
+from src.emergent_procurement_env import (ProcurementEmergentEnv,
+                                          calibrate_emergent_likelihoods,
+                                          calibrate_emergent_thresholds)
+from train_emergent_rl import (CHECKPOINT_DIR, RESERVE_PRICE,
+                               ROUNDS_PER_EPISODE, TOTAL_FIRMS, env_creator)
 
 
 def evaluate_model():
@@ -21,16 +19,28 @@ def evaluate_model():
 
     print("Re-calibrating regulator (same procedure as training, independent seed)...")
     l0, l1 = calibrate_emergent_likelihoods(
-        reserve_price=RESERVE_PRICE, total_firms=TOTAL_FIRMS,
-        n_episodes=150, rounds_per_episode=ROUNDS_PER_EPISODE, seed0=99,
+        reserve_price=RESERVE_PRICE,
+        total_firms=TOTAL_FIRMS,
+        n_episodes=150,
+        rounds_per_episode=ROUNDS_PER_EPISODE,
+        seed0=99,
     )
     cusum_h, sr_h = calibrate_emergent_thresholds(
-        l0, l1, reserve_price=RESERVE_PRICE, total_firms=TOTAL_FIRMS,
-        n_episodes=100, rounds_per_episode=ROUNDS_PER_EPISODE, seed0=20_099,
+        l0,
+        l1,
+        reserve_price=RESERVE_PRICE,
+        total_firms=TOTAL_FIRMS,
+        n_episodes=100,
+        rounds_per_episode=ROUNDS_PER_EPISODE,
+        seed0=20_099,
     )
 
-    env_config = {"likelihood_h0": l0, "likelihood_h1": l1,
-                  "cusum_threshold": cusum_h, "sr_threshold": sr_h}
+    env_config = {
+        "likelihood_h0": l0,
+        "likelihood_h1": l1,
+        "cusum_threshold": cusum_h,
+        "sr_threshold": sr_h,
+    }
 
     temp_env = ProcurementEmergentEnv(likelihood_h0=l0, likelihood_h1=l1)
     obs_space = temp_env.observation_space("firm01")
@@ -59,33 +69,47 @@ def evaluate_model():
     algo.restore(CHECKPOINT_DIR)
 
     env = ProcurementEmergentEnv(
-        reserve_price=RESERVE_PRICE, total_firms=TOTAL_FIRMS,
+        reserve_price=RESERVE_PRICE,
+        total_firms=TOTAL_FIRMS,
         rounds_per_episode=ROUNDS_PER_EPISODE,
-        likelihood_h0=l0, likelihood_h1=l1,
-        cusum_threshold=cusum_h, sr_threshold=sr_h,
+        likelihood_h0=l0,
+        likelihood_h1=l1,
+        cusum_threshold=cusum_h,
+        sr_threshold=sr_h,
     )
     obs, _ = env.reset(seed=42)
 
     print("=" * 90)
-    print(" EVALUATION: CONVERGED FIRM POLICY vs. CLOSED-LOOP BAYESIAN-SEQUENTIAL REGULATOR")
+    print(
+        " EVALUATION: CONVERGED FIRM POLICY vs. CLOSED-LOOP BAYESIAN-SEQUENTIAL REGULATOR"
+    )
     print("=" * 90)
 
     for r in range(1, ROUNDS_PER_EPISODE + 1):
         actions = {
-            a: algo.compute_single_action(observation=obs[a], policy_id="shared_policy", explore=False)
+            a: algo.compute_single_action(
+                observation=obs[a], policy_id="shared_policy", explore=False
+            )
             for a in env.agents
         }
         obs, rewards, terms, truncs, infos = env.step(actions)
         g = infos.pop("__common__")
 
         sorted_agents = sorted(infos.items(), key=lambda kv: kv[1]["bid"])
-        print(f"\n--- ROUND {r:2d} --- P(cartel)={g['posterior_collusion']:.3f} "
-              f"alarm={'YES' if g['alarm'] else 'no'}")
+        rotation_status = "YES" if g.get("alarm_rotation", False) else "no"
+        print(
+            f"\n--- ROUND {r:2d} --- P(cartel)={g['posterior_collusion']:.3f} "
+            f"alarm={'YES' if g['alarm'] else 'no'} | RotAlarm={rotation_status} (Ent={g.get('entropy', 0.0):.2f}) | "
+            f"Eng Estimate=${g['engineering_estimate']:.2f}"
+        )
         for idx, (agent, info) in enumerate(sorted_agents[:5]):
             flag = " <== WINNER" if agent == g["winner"] else ""
             strat = info.get("strategy", "?")
-            print(f"    {idx+1:02d}. {agent} (Strat {strat}) | markup={info['markup']:.3f}x | "
-                  f"bid=${info['bid']:.2f} | reward=${info['reward']:.2f}{flag}")
+            firm_post = info.get("firm_posterior", 0.0)
+            print(
+                f"    {idx+1:02d}. {agent} (Strat {strat}) | Suspicion={firm_post:.2f} | markup={info['markup']:.3f}x | "
+                f"bid=${info['bid']:.2f} | reward=${info['reward']:.2f}{flag}"
+            )
 
         if all(terms.values()):
             break
