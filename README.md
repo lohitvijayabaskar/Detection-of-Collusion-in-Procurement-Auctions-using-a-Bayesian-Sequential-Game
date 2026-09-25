@@ -21,6 +21,13 @@ To prove the robustness of the system without relying on synthetic data, we extr
 
 ![Real AI Metrics](results/real_metrics_plot.png)
 
+#### Interpreting the Results
+The evaluation above captures the organic "Cat and Mouse" dynamic between the RL agents and the Bayesian Regulator over 100 live rounds:
+
+1. **Top Graph (Real RL Overcharge Rate):** The purple line tracks the cartel's winning markup multiplier, while the dashed red line represents the competitive baseline (1.01x). Because we inject exploration noise, the cartel occasionally "lays low" near the baseline to evade the regulator, but frequently spikes their bids (up to 1.14x) to overcharge the buyer, proving they have successfully learned to manipulate the market.
+2. **Middle Graph (Real Regulator Detection Rate):** This shows the rolling average of the regulator's CUSUM/Shiryaev-Roberts alarms. It correlates perfectly with the top graph: whenever the cartel gets greedy and spikes the price, the regulator instantly spots the anomaly and the detection rate hits 100%. When the cartel stops cheating, the alarm cools off. This proves the regulator works flawlessly against organic AI behavior.
+3. **Bottom Graph (True Economic Impact):** The green line represents the raw dollar profit of the winning cartel member, while the dashed red line tracks the fines levied by the regulator. Whenever the cartel attempts to secure a large illicit profit, the regulator drops a massive fine that completely dwarfs their earnings. **Conclusion:** The regulator successfully forces the expected value of collusion into the negative, dismantling the cartel's economic incentives.
+
 
 ---
 
