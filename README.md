@@ -16,8 +16,8 @@ Because the regulator operates *in-the-loop* (agents observe the regulator's sus
 
 ![Firm Strategy Distribution](results/metrics_plot.png)
 
-### Authentic Non-Doctored AI Evaluation
-To prove the robustness of the system without relying on synthetic data, we extract real, unscripted metrics directly from the converged PPO neural networks during live evaluation:
+### Empirical Evaluation of Converged Policies
+To demonstrate the robustness of the regulatory mechanism, we evaluate the converged PPO policies dynamically across 100 live auction rounds:
 
 ![Real AI Metrics](results/real_metrics_plot.png)
 
