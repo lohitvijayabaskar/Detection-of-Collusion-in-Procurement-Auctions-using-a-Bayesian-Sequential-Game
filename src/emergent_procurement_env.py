@@ -15,7 +15,7 @@ import numpy as np
 from gymnasium.spaces import Box, MultiDiscrete
 from pettingzoo import ParallelEnv
 
-from regulator import (BayesianSequentialRegulator, KDELikelihood,
+from src.regulator import (BayesianSequentialRegulator, KDELikelihood,
                        RegulatorConfig, compute_screens, suspect_scores)
 
 # =====================================================================
