@@ -49,7 +49,11 @@ python run_validation.py --tag first --designs full_gbm,knowledge_gbm,dep_gbm
 
 ## Limitations
 
-- Synthetic data only; no labelled per-bid real dataset has been supplied.
+- Real data: one tender-level leave-one-dataset-out run on Japan, Italy and Brazil
+  (García Rodríguez et al. 2022). Pair features beat the screens on Italy only (+0.144
+  [0.078, 0.234] AUC). On Japan and Brazil a single CV screen does as well or better, and
+  the alarm threshold did not transfer to Japan (26.5 % false alarms). See
+  `results/real_lodo_1.md`.
 - Small cartels inside a competitive fringe, bid suppression (when held out) and noisy or
   defecting cartels are not detected at AUC ≥ 0.85.
 - Change scans (single-change and epidemic) and the HMM/CUSUM layer added no measurable

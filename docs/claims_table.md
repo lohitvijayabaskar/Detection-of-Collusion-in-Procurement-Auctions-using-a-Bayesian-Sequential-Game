@@ -19,10 +19,13 @@ All numbers are from LOCKED run 1 (`results/locked_1_full_gbm.json`, design full
 | 10 | The within-firm time-shuffle null improves the dependence features | supported (validation) | dep_gbm 0.771 → 0.826; full_gbm 0.847 → 0.862 (I1) |
 | 12 | Epidemic (window) change scans improve detection of intermittent cartels | NOT supported (validation) | W2-3: intermittent 0.856 → 0.856, macro 0.862 → 0.861; W2-1 and W2-2 falsified at prototype |
 | 11 | A knowledge-directed tail score, participation features or monotone constraints help held-out mechanisms | NOT supported (validation) | I2 and I4: macro changes ≤ +0.005 within CI; mixed per mechanism |
+| 13 | On real data (tender-level leave-one-dataset-out), pair features from other tenders improve on the literature-screen model | supported for Italy only | REAL run 1: Italy +0.144 [0.078, 0.234]; Japan +0.018 [−0.032, 0.069]; Brazil −0.013 [−0.109, 0.177] |
+| 14 | The learned detector transfers across countries better than a single screen | NOT supported | Japan: CV 0.739 vs full 0.691; Brazil: CV 0.873 vs full 0.742 (difference −0.131 [−0.247, −0.013]) |
+| 15 | A 5 % false-alarm threshold transfers across countries | NOT supported | held-out FA: Italy 0.007, Brazil 0.088, Japan 0.265 |
 
 ## Limitations (state in any write-up)
 
-- Synthetic markets only; no labelled per-bid real dataset was available.
+- Real-data evidence is three cartel cases (one per country) at tender level, from García Rodríguez et al. (2022); the market-level simulator detector could not be applied directly (D2).
 - Small cartels in a large competitive fringe (2-3 firms), bid suppression (when held out) and noisy/defecting cartels stay below AUC 0.85.
 - Detection of bid suppression under LOMO relies on signals the other mechanisms share; its own signal (missing bids) is not learned when it is held out.
 - The detector is a market-level score; it does not identify cartel members.

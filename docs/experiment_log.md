@@ -153,3 +153,21 @@ Prototypes use 150 fresh markets per mechanism (seed 78, split label "proto"; ha
 
 - Change: `bidrig/realeval.py` (screen and leave-tender-out pair features, percentile scaling, LODO, block bootstrap), `tests/test_realeval.py` (6 tests: brute-force check of the leave-tender-out statistics, label independence, scaling, bootstrap, end-to-end smoke on synthetic data), `scripts/run_real_lodo.py` (single run, refuses repeats by hash).
 - Design: `docs/real_data_design.md`, hash 1cec4feb56110f6c. Waiting for the user's approval before the one run.
+
+## 2026-10-22 REAL run 1: tender-level LODO (hash 1cec4feb56110f6c, approved by the user, run once)
+
+- Command: `run_real_lodo.py --note "approved by user 2026-10-22 as proposed (hash 1cec4feb56110f6c)"` (33 s; 1000 block-bootstrap resamples). Files: `results/real_lodo_1.{json,md}`, `results/real_runs.jsonl`.
+- Pre-registered main question: does real_full_gbm beat real_lit_gbm on each held-out dataset (paired AUC CI above 0)?
+
+| held out | full AUC | lit AUC | full − lit | full FA | full prec@10 % (base) | best single screen |
+|---|---|---|---|---|---|---|
+| Italy (278, 143 collusive) | 0.779 [0.668, 0.876] | 0.635 [0.492, 0.770] | **+0.144 [0.078, 0.234]** | 0.007 | 0.929 [0.749, 1.000] (0.514) | spread 0.676 |
+| Japan (1080, 123) | 0.691 [0.627, 0.758] | 0.674 [0.606, 0.737] | +0.018 [−0.032, 0.069] | **0.265** | 0.259 [0.148, 0.380] (0.114) | CV 0.739 |
+| Brazil (101, 33) | 0.742 [0.661, 0.850] | 0.755 [0.623, 0.849] | −0.013 [−0.109, 0.177] | 0.088 | 0.500 [0.200, 0.800] (0.327) | CV 0.873 |
+
+- Answer: yes for Italy only. Japan: no significant difference. Brazil: no significant difference vs lit_gbm, and real_full_gbm is worse than the CV screen alone (−0.131 [−0.247, −0.013]).
+- False alarms at the transferred 5 % threshold: Italy 0.007, Brazil 0.088, Japan 0.265 (lit_gbm on Japan: 0.212). The threshold does not transfer to Japan.
+- Precision@10 % CI above the base rate: Italy and Japan yes; Brazil no.
+- Pair features alone (real_pair_gbm): 0.679 / 0.630 / 0.685 (Italy / Japan / Brazil). Adding them to the screens helps where repeated bidders exist (Italy, the only dataset with repeated markets in D2) and not elsewhere.
+- Single CV screen: 0.630 / 0.739 / 0.873. A single screen beats every learned model on Japan and Brazil, so the learned models do not transfer across countries better than the simplest screen.
+- No further real-data runs under this hash. Any change needs a new proposal and the user's approval.
