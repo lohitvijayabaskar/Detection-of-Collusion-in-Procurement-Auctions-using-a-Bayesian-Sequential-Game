@@ -96,3 +96,17 @@ weaker than the literature GBM at this scale.
 - Uniform-markup control: AUC 0.478 [0.450, 0.503], alarm 0.047. Undetectable by design, as expected.
 - Criteria: C1 FAIL (4 of 8 mechanisms below 0.85 in at least one condition; intermittent misses by 0.001 at spread), C2 PASS, C3 PASS, C4 PASS.
 - No further locked runs. Another design would need a new freeze based on validation only.
+
+## 2026-10-21 Workstream W2: within-market change detection (targets C1 for intermittent: 0.849 at unseen spreads on the locked test)
+
+Prototypes use 150 fresh markets per mechanism (seed 78, split label "proto"; half in-distribution, half with cost spread 0.18-0.22). Univariate AUC vs honest; the reference is the existing `chg_res_sd` bridge scan.
+
+- W2-1. Hypothesis: a bridge scan on the per-tender closeness of the market's top-5 close pairs jumps inside the cartel window. Result: intermittent 0.731 vs reference 0.794. Falsified; not implemented. No-gain count 1.
+- W2-2. Hypothesis: the top-3 close-pair share recomputed in contiguous segments (halves, thirds, middle half), minus its full-history value, concentrates an intermittent cartel. Result: 0.682 vs 0.794. Falsified; not implemented. No-gain count 2.
+- W2-3. Hypothesis: an intermittent cartel is an epidemic change (start and stop), so the epidemic scan max |Σz|/√(L(1−L/n)) beats the single-change bridge scan. Prototype: res_sd 0.818 vs 0.794; close 0.552 vs 0.555; gap 0.563 vs 0.581. Implemented as `chg_epi_*` (feature v4, test against brute force) and sent to full validation (`--tag v4`).
+- W2-3 validation (`run_validation.py --tag v4 --designs full_gbm,change_gbm,seq_gbm,knowledge_gbm,full_minus_change`, feature v4): full_gbm macro 0.861 [0.852, 0.870] (v3: 0.862); intermittent 0.856 (v3: 0.856); change_gbm 0.500 (v3: 0.494); full_minus_change 0.864. No gain. REVERTED (`bidrig/features.py`, `bidrig/datasets.py` and the test restored to feature v3; `results/validation_v4.*` kept). No-gain count 3. STOP RULE reached for W2.
+
+## 2026-10-21 Final status
+
+- Both workstreams that target the unmet criterion C1 (detector features and within-market change detection) ended by the three-iterations-without-gain rule. Making the simulator's mechanisms easier to detect would change the benchmark to fit the detector, so it was not done. Real data needs a labelled per-bid dataset from the user (rule 5).
+- Locked result stands as run 1 (full_gbm): C1 not met (documented as a limitation), C2-C4 met. The source after the revert matches the locked design's source.

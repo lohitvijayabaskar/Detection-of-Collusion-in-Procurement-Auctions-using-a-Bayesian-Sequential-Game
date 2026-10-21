@@ -17,6 +17,7 @@ All numbers are from LOCKED run 1 (`results/locked_1_full_gbm.json`, design full
 | 8 | Uniform-markup collusion is not identifiable from bids alone | consistent (negative control) | AUC 0.478 [0.450, 0.503], alarm 0.047 |
 | 9 | Within-market change scans and the sequential layer (CUSUM, HMM) add detection power | NOT supported (validation) | change_gbm 0.494, seq_gbm 0.549; dropping them changes full_gbm by ≤ 0.002 (V1, I1) |
 | 10 | The within-firm time-shuffle null improves the dependence features | supported (validation) | dep_gbm 0.771 → 0.826; full_gbm 0.847 → 0.862 (I1) |
+| 12 | Epidemic (window) change scans improve detection of intermittent cartels | NOT supported (validation) | W2-3: intermittent 0.856 → 0.856, macro 0.862 → 0.861; W2-1 and W2-2 falsified at prototype |
 | 11 | A knowledge-directed tail score, participation features or monotone constraints help held-out mechanisms | NOT supported (validation) | I2 and I4: macro changes ≤ +0.005 within CI; mixed per mechanism |
 
 ## Limitations (state in any write-up)

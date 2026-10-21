@@ -52,5 +52,6 @@ python run_validation.py --tag first --designs full_gbm,knowledge_gbm,dep_gbm
 - Synthetic data only; no labelled per-bid real dataset has been supplied.
 - Small cartels inside a competitive fringe, bid suppression (when held out) and noisy or
   defecting cartels are not detected at AUC ≥ 0.85.
-- Change scans and the HMM/CUSUM layer added no measurable power on validation.
+- Change scans (single-change and epidemic) and the HMM/CUSUM layer added no measurable
+  power on validation.
 - Market-level scores only; cartel members are not identified.
