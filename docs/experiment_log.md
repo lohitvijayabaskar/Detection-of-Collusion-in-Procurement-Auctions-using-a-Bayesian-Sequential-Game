@@ -85,3 +85,14 @@ weaker than the literature GBM at this scale.
 
 - On validation, C1 is unmet for partial_fringe (0.67-0.69 across designs), bid_suppression (0.75-0.81) and noisy_defecting (0.77-0.81). C2, C3 and C4 pass on validation for full_gbm.
 - Freeze rule (keep a change only if validation improves): I1 is the only kept change. The frozen design is **full_gbm** (groups lit, dep, change, seq; GBM_PARAMS as committed; feature v3, whose groups are identical to v2's for these columns). Only this design gets a locked run; the others are not run on test, so test results cannot be used to choose among them.
+
+## 2026-10-21 LOCKED run 1: full_gbm (hash 6cc622540eac3929)
+
+- Command: `build_features.py --seeds 0-9 --splits test`, then `run_locked_test.py --design full_gbm --note "frozen after validation v1-v3mono; only kept change I1 (time null)"` (seeds 0-9, 1000 bootstraps, 551 s). Files: `results/locked_1_full_gbm.{json,md}`, `results/locked_runs.jsonl`.
+- Macro LOMO AUC 0.870 [0.862, 0.878]; lit_gbm 0.803 [0.792, 0.812]; difference +0.067 [0.060, 0.074]. Against the single screens: +0.196 (rdalt) to +0.382 (gap), all CIs above 0.
+- Per held-out mechanism, pooled AUC (worst of in / size / spread): rotation 0.961 (0.939), price_fixing 0.971 (0.963), complementary 0.971 (0.947), cover_bidding 0.946 (0.921), intermittent 0.871 (0.849, spread), noisy_defecting 0.823 (0.775), bid_suppression 0.744 (0.677), partial_fringe 0.672 (0.621).
+- FA, all-mechanism model, calib 5 % threshold: in 0.053, size 0.075, spread 0.072, markup_high 0.043, capacity 0.048, noisy 0.013. Worst LOMO-model FA: 0.116 (size).
+- Precision@10 % (base rate 0.167): 0.378 [0.335, 0.418] (partial_fringe) to 0.983 (price_fixing); macro 0.766.
+- Uniform-markup control: AUC 0.478 [0.450, 0.503], alarm 0.047. Undetectable by design, as expected.
+- Criteria: C1 FAIL (4 of 8 mechanisms below 0.85 in at least one condition; intermittent misses by 0.001 at spread), C2 PASS, C3 PASS, C4 PASS.
+- No further locked runs. Another design would need a new freeze based on validation only.
