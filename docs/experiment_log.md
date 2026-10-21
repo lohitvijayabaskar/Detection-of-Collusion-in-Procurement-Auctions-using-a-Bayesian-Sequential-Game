@@ -129,3 +129,22 @@ Prototypes use 150 fresh markets per mechanism (seed 78, split label "proto"; ha
 - `Collusive_competitor` (the paper's thresholded label) is constant within every tender, so it is a tender label. `Collusive_competitor_original` is per bid (cartel membership).
 - Fit to this project: Japan, Italy and Brazil have everything the detector uses (bids, persistent firm IDs, an estimate). The USA lacks an estimate, and the Swiss sets lack firm IDs (literature screens only).
 - Gaps: no cartel identifier within a dataset. Italy's `Cartel_name` is 0/1, which looks like a membership flag, not a cartel identity; this is unverified. Leave-one-cartel-out therefore becomes leave-one-dataset-out. The data has no natural "market" unit of repeated tenders, so one has to be defined (e.g. windows of consecutive tenders), and that choice changes what the market-level score means. Date values in Brazil include a sentinel (-922337203).
+
+## 2026-10-22 D2: real-data loader and the window rule (descriptive only; no detector run)
+
+- Change: `bidrig/realdata.py` (`load`, `standardise`, `make_windows`) and `tests/test_realdata.py` (4 tests; the real-file test skips when the data is absent).
+- Facts found while building it:
+  - Italy is an average-bid auction: the winner is never the lowest bid (0 of 276 tenders), and `Bid_value` = 100 × PTE × (1 − rebate/100) (ratio median 1.0000). The first-price, winner-based features (cover tracking, win/loss, repeat wins, gap screens) are misspecified for Italy.
+  - Japan: the lowest bid wins in 84 % of tenders (consistent with a price floor); tender id order equals date order.
+  - Brazil: the lowest bid always wins; id order and date order disagree (Spearman −0.245), and 2 dates are invalid.
+- Requested rule, consecutive non-overlapping windows (descriptive counts):
+
+| dataset | W | windows | collusive share ≥ 0.5 | ≤ 0.1 | between | median firms per window | median firms with ≥ 6 bids in window |
+|---|---|---|---|---|---|---|---|
+| Japan | 20 / 30 / 40 | 54 / 36 / 27 | 0 / 0 / 0 | 32 / 21 / 16 | 22 / 15 / 11 | 204 / 290 / 368 | 0 / 0 / 0 |
+| Italy | 20 / 30 / 40 | 13 / 9 / 6 | 7 / 5 / 3 | 1 / 1 / 0 | 5 / 3 / 3 | 244 / 268 / 315 | 102 / 125 / 167 |
+| Brazil | 20 / 30 / 40 | 5 / 3 / 2 | 1 / 1 / 0 | 2 / 1 / 1 | 2 / 1 / 1 | 81 / 112 / 144 | 2 / 6 / 10 |
+
+- Consequence: Japan has no collusive window at any size and no firm bids ≥ 6 times in a window, so the identity features are undefined and Japan's held-out AUC cannot be computed. Brazil gives 3-5 windows. A market-level leave-one-dataset-out evaluation is not feasible with consecutive windows.
+- Alternative checked: label-free average-linkage clustering of tenders on bidder-set Jaccard distance. Japan: 2 clusters of ≥ 20 tenders (48 tenders, both non-collusive); Brazil: none; Italy (cut 0.6): 7 clusters, 176 tenders, collusive shares 0.59, 1.0, 1.0, 0.4, 0.08, 0.0, 0.0. Only Italy has real repeated markets.
+- Status: waiting for the user's choice of real-data unit before any evaluation runs.
