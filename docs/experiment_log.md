@@ -148,3 +148,8 @@ Prototypes use 150 fresh markets per mechanism (seed 78, split label "proto"; ha
 - Consequence: Japan has no collusive window at any size and no firm bids ≥ 6 times in a window, so the identity features are undefined and Japan's held-out AUC cannot be computed. Brazil gives 3-5 windows. A market-level leave-one-dataset-out evaluation is not feasible with consecutive windows.
 - Alternative checked: label-free average-linkage clustering of tenders on bidder-set Jaccard distance. Japan: 2 clusters of ≥ 20 tenders (48 tenders, both non-collusive); Brazil: none; Italy (cut 0.6): 7 clusters, 176 tenders, collusive shares 0.59, 1.0, 1.0, 0.4, 0.08, 0.0, 0.0. Only Italy has real repeated markets.
 - Status: waiting for the user's choice of real-data unit before any evaluation runs.
+
+## 2026-10-22 D3: tender-level LODO design proposed (user chose option 2); not run
+
+- Change: `bidrig/realeval.py` (screen and leave-tender-out pair features, percentile scaling, LODO, block bootstrap), `tests/test_realeval.py` (6 tests: brute-force check of the leave-tender-out statistics, label independence, scaling, bootstrap, end-to-end smoke on synthetic data), `scripts/run_real_lodo.py` (single run, refuses repeats by hash).
+- Design: `docs/real_data_design.md`, hash 1cec4feb56110f6c. Waiting for the user's approval before the one run.
