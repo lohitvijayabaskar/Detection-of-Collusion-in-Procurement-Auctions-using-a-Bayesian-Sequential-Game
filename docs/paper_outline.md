@@ -1,10 +1,12 @@
 # Paper outline (workshop / benchmark track)
 
 Framing chosen by the user on 2026-10-22: a benchmark paper with an honest partial negative
-result. Claims used: 2-6, 8 and 10 from `docs/claims_table.md`. Claim 7 (C1 not met) is a
-headline limitation. Numbers come from LOCKED run 1 (`results/locked_1_full_gbm.json`: design
-full_gbm, seeds 0-9, two-level bootstrap 95 % CIs, 1000 resamples) unless marked
-"validation". Synthetic data only.
+result. Claims used: 2-6, 8, 10 and (added 2026-10-22) 13-15 from `docs/claims_table.md`.
+Claim 7 (C1 not met) is a headline limitation; claims 14-15 and the Japan/Brazil results are
+limitations. Simulator numbers come from LOCKED run 1 (`results/locked_1_full_gbm.json`:
+design full_gbm, seeds 0-9, two-level bootstrap 95 % CIs, 1000 resamples) unless marked
+"validation". Real-data numbers come from REAL run 1 (`results/real_lodo_1.json`: hash
+1cec4feb56110f6c, run once, moving-block bootstrap with block 20 and 1000 resamples).
 
 Target length: 4-6 pages plus appendix.
 
@@ -30,7 +32,12 @@ honest test set. Four mechanism families (rotation, price fixing, complementary 
 bidding) are detected at AUC ≥ 0.92 under every shift. Four are not detected at 0.85: small
 cartels inside a competitive fringe (0.672), bid suppression (0.744), noisy or defecting
 cartels (0.823) and intermittent cartels at unseen spreads (0.849). We report these as the
-benchmark's open problems.
+benchmark's open problems. On real bid data from three prosecuted cartel cases (Italy, Japan,
+Brazil), evaluated tender by tender with each country held out in turn, pair features
+computed from the other tenders improve on the screens only in Italy, the one case with
+repeated bidders (AUC +0.144 [0.078, 0.234]). In Japan and Brazil a single CV screen does as
+well or better, and an alarm threshold set on two countries gives 26.5 % false alarms on the
+third.
 
 ## 1. Introduction
 
@@ -48,6 +55,8 @@ benchmark's open problems.
      mechanism families robustly (claim 4).
   4. A measured map of what it does not detect (claim 7, Section 6) and an identification
      limit confirmed by a negative control (claim 8).
+  5. A pre-registered real-data check, one run, on three cartel cases: a gain where bidders
+     recur (Italy, claim 13), and no gain or threshold transfer elsewhere (claims 14-15).
 
 ## 2. Related work (to be written; no citations checked yet)
 
@@ -148,6 +157,36 @@ benchmark's open problems.
   markup looks like higher costs. The residual construction makes the detector blind to it by
   design.
 
+### 5.6 Real-data case study (claim 13)
+
+- Data: García Rodríguez et al. (2022) bid-level datasets with firm IDs and pre-tender
+  estimates: Italy (Turin roads, 278 tenders, 143 collusive), Japan (Okinawa, 1,080, 123),
+  Brazil (Petrobras, 101, 33). Switzerland and the USA are excluded (no firm IDs or no
+  estimate).
+- Why tender-level: windows of consecutive tenders do not form repeated markets. In Japan no
+  window is majority-collusive and no firm bids 6 or more times in any window; Brazil gives 3-5
+  windows (log D2). The market-level simulator detector therefore cannot be applied as is.
+- Design (`docs/real_data_design.md`, frozen and approved before the run):
+  - the tender's own literature screens;
+  - pair features for the tender's bidders, computed on all other tenders (exact
+    leave-tender-out): residual correlation, share of close bids, co-bidding;
+  - within-country percentile scaling;
+  - the same GBM settings as the simulator;
+  - train on two countries, test on the third;
+  - threshold at 5 % false alarms on the training countries.
+- Table 5: per held-out country, AUC, paired difference to the screens-only model,
+  false-alarm rate, and precision@10 % with base rate.
+- Italy (case study): combined 0.779 [0.668, 0.876] vs screens-only 0.635 [0.492, 0.770],
+  paired difference +0.144 [0.078, 0.234]; false alarms 0.007; precision@10 % 0.929
+  [0.749, 1.000] against a base rate of 0.514. It beats every single screen (best: spread
+  0.676).
+- Reading: Italy is the only country where the same firms meet repeatedly (seven
+  bidder-overlap clusters of 20 or more tenders, log D2). That is where identity information
+  exists to use, which matches the simulator's mechanism. One case, so this is illustrative,
+  not a general result.
+- Caveat in text: Turin uses an average-bid auction, so the gap and relative-distance screens
+  mean something different there. The pair features do not depend on who wins.
+
 ## 6. Limitations and open problems (headline: claim 7, C1 not met)
 
 - C1 (every held-out mechanism ≥ 0.85, including unseen sizes and spreads) fails for four of
@@ -165,8 +204,23 @@ benchmark's open problems.
 - Why (hypotheses, labelled as such): a 2-3 firm cartel leaves a single pair-level trace among
   up to 435 pairs in 20-60 tenders. Bid suppression's own signal (missing bids) cannot be
   learned when it is held out. Noisy and defecting cartels dilute the cover pattern.
+- Real data (claims 14, 15):
+  - Japan: no gain over the screens-only model (+0.018 [−0.032, 0.069]). A single CV screen
+    (0.739) is at least as good as the combined model (0.691); difference −0.047
+    [−0.102, 0.010].
+  - Brazil: no gain (−0.013 [−0.109, 0.177]). The combined model is worse than CV alone
+    (0.742 vs 0.873, difference −0.131 [−0.247, −0.013]), and precision@10 % (0.500
+    [0.200, 0.800]) does not clear the 0.327 base rate.
+  - Threshold transfer fails: at the threshold set on two countries, false alarms on the held
+    -out country are 0.007 (Italy), 0.088 (Brazil) and 0.265 (Japan; screens-only 0.212). A
+    deployed alarm would need recalibration per market.
+  - Hypotheses (labelled as such): Japan's and Brazil's firms rarely recur, so pair features
+    have little history (Brazil: median 1 tender per firm). Labels are the paper's
+    thresholded tender labels (216 Japanese tenders mix members and non-members). Each country
+    is a single cartel case.
 - Other limitations:
-  - synthetic data only, no labelled per-bid real data;
+  - real-data evidence is three cartel cases at tender level; the market-level benchmark
+    itself is synthetic;
   - cartels are imposed, not equilibrium behaviour, and the parameter ranges are design
     choices;
   - market-level scores only, no identification of members;
@@ -186,10 +240,17 @@ benchmark's open problems.
   including the reverted changes.
 - C: metric sanity tests and determinism check.
 - D: per-condition tables for all baselines from `results/locked_1_full_gbm.md`.
+- E: real-data design (`docs/real_data_design.md`), window and clustering diagnostics
+  (log D2), and the full per-country tables from `results/real_lodo_1.md`, including all
+  single screens.
 
 ## Do not claim
 
 - "Publication-ready" or "solves bid-rigging detection": C1 failed on the locked test.
 - Any effect of the change or sequential layers.
-- Any real-world detection rate.
+- Any general real-world detection rate. The real data is three cases; Italy is one case
+  study.
+- That the detector beats simple screens on real data in general (false for Japan and
+  Brazil).
+- A transferable alarm threshold.
 - Validation numbers presented as test results.
