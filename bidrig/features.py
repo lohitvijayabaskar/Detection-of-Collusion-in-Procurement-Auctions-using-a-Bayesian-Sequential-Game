@@ -29,6 +29,11 @@ MIN_BIDS = 6  # bids needed for a firm dispersion
 MIN_WINS = 4  # wins needed for cover tracking
 N_PERM = 30
 TIE_TOL = 0.005
+CLOSE_TOL = 0.03
+# Identity statistics are standardised against two nulls: the tender null shuffles bids among
+# the participants of each tender; the time null shuffles each firm's residuals across the
+# tenders it bid in (keeps each firm's marginal behaviour, breaks within-tender coordination).
+RAW_STATS = ("firm_sd_min", "firm_sd_low")  # invariant under the time null: kept raw
 
 LIT_SCREENS = ("cv", "skew", "kurt", "rd", "rdalt", "gap", "spread")
 DEP_STATS = (
@@ -41,6 +46,7 @@ DEP_STATS = (
     "win_loss_corr",
     "repeat_win",
     "near_tie_pair",
+    "close_pair",
 )
 SERIES = ("res_sd", "gap", "nbids", "close")
 
@@ -204,8 +210,12 @@ def identity_stats(bids: np.ndarray, r: np.ndarray) -> dict[str, float]:
         frac = np.where(co >= MIN_CO, ties.sum(axis=0) / np.maximum(co, 1), np.nan)
         frac[np.tril(np.ones_like(co, dtype=bool))] = np.nan
         out["near_tie_pair"] = float(np.nanmax(frac)) if np.isfinite(frac).any() else np.nan
+        close = (diff < CLOSE_TOL) & both
+        cfrac = np.where(co >= MIN_CO, close.sum(axis=0) / np.maximum(co, 1), np.nan)
+        cfrac[np.tril(np.ones_like(co, dtype=bool))] = np.nan
+        out["close_pair"] = _topk_mean(cfrac.ravel())
     else:
-        out["near_tie_pair"] = np.nan
+        out["near_tie_pair"] = out["close_pair"] = np.nan
     return out
 
 
@@ -231,6 +241,18 @@ def permute_within_tenders(
     return bp, rp
 
 
+def permute_within_firms(r: np.ndarray, rng: np.random.Generator) -> np.ndarray:
+    """Shuffle each firm's residuals across the tenders it bid in; participation is kept."""
+    mask = ~np.isnan(r)
+    big = np.iinfo(np.int64).max
+    pos = np.argsort(np.where(mask, np.arange(r.shape[0])[:, None], big), axis=0, kind="stable")
+    keys = np.where(mask, rng.random(r.shape), np.inf)
+    src = np.argsort(keys, axis=0, kind="stable")
+    rp = np.empty_like(r)
+    np.put_along_axis(rp, pos, np.take_along_axis(r, src, axis=0), axis=0)
+    return rp
+
+
 def cobid_features(mask: np.ndarray) -> dict[str, float]:
     m = mask.astype(float)
     t_count = m.shape[0]
@@ -247,24 +269,37 @@ def cobid_features(mask: np.ndarray) -> dict[str, float]:
     return {"cobid_min": float(-np.nanmin(zz)), "cobid_bottom3": _topk_mean(-zz.ravel())}
 
 
+def _zscore(obs: float, null: list[float]) -> float:
+    nv = np.array(null, dtype=float)
+    nv = nv[np.isfinite(nv)]
+    if not np.isfinite(obs) or nv.size < 5:
+        return np.nan
+    return float((obs - nv.mean()) / (nv.std() + 1e-3))
+
+
 def dependence_features(
     bids: np.ndarray, estimate: np.ndarray, rng: np.random.Generator, n_perm: int = N_PERM
 ) -> dict[str, float]:
+    """Identity statistics as z-scores against both nulls.
+
+    ``dep_<stat>`` uses the tender null, ``dep_<stat>_t`` the time null. Statistics that the
+    time null leaves unchanged (``RAW_STATS``) are reported raw instead of ``_t``.
+    """
     r = residuals(bids, estimate)
     obs = identity_stats(bids, r)
-    null = {k: [] for k in obs}
+    null_tender = {k: [] for k in obs}
+    null_time = {k: [] for k in obs}
     for _ in range(n_perm):
         bp, rp = permute_within_tenders(bids, r, rng)
         for k, v in identity_stats(bp, rp).items():
-            null[k].append(v)
+            null_tender[k].append(v)
+        rp = permute_within_firms(r, rng)
+        for k, v in identity_stats(np.exp(rp), rp).items():
+            null_time[k].append(v)
     feats = {}
     for k in DEP_STATS:
-        nv = np.array(null[k], dtype=float)
-        nv = nv[np.isfinite(nv)]
-        if not np.isfinite(obs[k]) or nv.size < 5:
-            feats[f"dep_{k}"] = np.nan
-            continue
-        feats[f"dep_{k}"] = float((obs[k] - nv.mean()) / (nv.std() + 1e-3))
+        feats[f"dep_{k}"] = _zscore(obs[k], null_tender[k])
+        feats[f"dep_{k}_t"] = obs[k] if k in RAW_STATS else _zscore(obs[k], null_time[k])
     feats.update({f"dep_{k}": v for k, v in cobid_features(~np.isnan(bids)).items()})
     return feats
 
@@ -368,7 +403,8 @@ def market_features(bids: np.ndarray, estimate: np.ndarray, rng: np.random.Gener
 
 FEATURE_GROUPS = {
     "lit": tuple(f"lit_{s}_{a}" for s in LIT_SCREENS for a in ("mean", "median", "sd")),
-    "dep": tuple(f"dep_{k}" for k in DEP_STATS) + ("dep_cobid_min", "dep_cobid_bottom3"),
+    "dep": tuple(f"dep_{k}{sfx}" for k in DEP_STATS for sfx in ("", "_t"))
+    + ("dep_cobid_min", "dep_cobid_bottom3"),
     "change": tuple(f"chg_{k}" for k in SERIES),
     "seq": ("seq_cusum", "seq_hmm_max", "seq_hmm_mean"),
 }

@@ -120,3 +120,15 @@ def test_dependence_features_invariant_to_uniform_markup():
     for k in ALL_FEATURES:
         if k.startswith(("dep_", "chg_", "seq_")) or "cv" in k or "skew" in k:
             assert f1[k] == pytest.approx(f2[k], nan_ok=True, rel=1e-6, abs=1e-9), k
+
+
+def test_time_null_keeps_each_firms_residuals():
+    from bidrig.features import permute_within_firms
+
+    m = market(seed=6)
+    r = residuals(m.bids, m.estimate)
+    rp = permute_within_firms(r, np.random.default_rng(0))
+    assert np.array_equal(np.isnan(rp), np.isnan(r))
+    for j in range(r.shape[1]):
+        assert np.allclose(np.sort(rp[~np.isnan(rp[:, j]), j]), np.sort(r[~np.isnan(r[:, j]), j]))
+    assert not np.allclose(rp, r, equal_nan=True)

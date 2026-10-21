@@ -124,13 +124,36 @@ def base_rate(groups, sets, design: str, m: str) -> float:
     return n_pos / (n_pos + n_neg)
 
 
+class _Memo:
+    """Single-sample cache: statistics sharing sub-results reuse them within one resample."""
+
+    def __init__(self):
+        self.sample_id, self.values = None, {}
+
+    def wrap(self, key, f):
+        def g(groups):
+            if id(groups) != self.sample_id:
+                self.sample_id, self.values = id(groups), {}
+            if key not in self.values:
+                self.values[key] = f(groups)
+            return self.values[key]
+
+        return g
+
+
 def evaluate(
     groups, sets, designs, baselines=(), rng=None, n_boot: int = 1000, compare=None
 ) -> dict:
     """Metrics with CIs for each design, plus paired differences (``compare`` - baseline)."""
     rng = rng or np.random.default_rng(12345)
     stats = {}
-    per_design = {d: metric_functions(d, sets) for d in designs}
+    memo = _Memo()
+    per_design = {}
+    for d in designs:
+        fns = metric_functions(d, sets)
+        for k in list(fns):  # in place: macro statistics look entries up in this dict
+            fns[k] = memo.wrap((d, k), fns[k])
+        per_design[d] = fns
     for d, fns in per_design.items():
         stats.update({f"{d}::{k}": f for k, f in fns.items()})
     for d in compare if compare is not None else designs:

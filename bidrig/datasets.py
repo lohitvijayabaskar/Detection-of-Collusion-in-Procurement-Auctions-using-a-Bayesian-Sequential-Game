@@ -27,7 +27,7 @@ from bidrig.collusion import IN_SCOPE, MECHANISMS
 from bidrig.features import ALL_FEATURES, market_features
 from bidrig.simulator import MarketSpec, sample_config, simulate_market
 
-FEATURE_VERSION = 1
+FEATURE_VERSION = 2
 CACHE_DIR = Path(__file__).resolve().parent.parent / "cache"
 
 BASE = MarketSpec()
