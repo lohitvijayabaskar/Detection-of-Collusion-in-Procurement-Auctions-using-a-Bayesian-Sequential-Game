@@ -218,6 +218,25 @@ third.
     have little history (Brazil: median 1 tender per firm). Labels are the paper's
     thresholded tender labels (216 Japanese tenders mix members and non-members). Each country
     is a single cartel case.
+- Transfer to another simulator fails (old RL repo, branch `new-detector-check`, log entries
+  E1 and E2; pre-registered before running):
+  - Setup: the frozen full_gbm (trained on this benchmark only) scored episodes of the older
+    procurement environment (20 rounds × 20 firms, scripted strategies, no regulator).
+  - E1, transferred threshold: false alarms 0.997 on honest episodes with mixed strategies.
+    Against those honest episodes cartel AUCs are mostly below 0.5: cover bidding k = 2-16
+    0.31-0.48, k = 20 0.737; target pricing 0.006-0.43. Against all-strategy-3 honest
+    episodes every condition scores 0.86-1.00, including the out-of-scope uniform-markup
+    control (0.995), so those AUCs measure "not strategy 3", not collusion.
+  - E2, threshold refitted on fresh honest episodes of that environment (model unchanged;
+    AUCs identical to E1 by construction): false alarms fall to 0.070 (mixed) and 0.000
+    (strategy 3), but cartel alarm rates are 0.000-0.150, at or within the CI of the honest
+    rate.
+  - Reading: the failure is in the ranking, not the threshold. Hypothesis (untested): that
+    environment's honest strategies anchor bids to the previous winning bid, with costs and
+    the estimate fixed per episode, so honest bids co-move. That co-movement is what the
+    identity features read as coordination. The detector's notion of "honest" is tied to how
+    the benchmark generates honest bids; together with the real-data threshold failure in
+    Japan, this argues for per-market calibration and against claims of generality.
 - Other limitations:
   - real-data evidence is three cartel cases at tender level; the market-level benchmark
     itself is synthetic;
@@ -253,4 +272,6 @@ third.
 - That the detector beats simple screens on real data in general (false for Japan and
   Brazil).
 - A transferable alarm threshold.
+- That the detector works on other simulators or bid-generating processes (fails on the old
+  RL environment, E1 and E2).
 - Validation numbers presented as test results.
