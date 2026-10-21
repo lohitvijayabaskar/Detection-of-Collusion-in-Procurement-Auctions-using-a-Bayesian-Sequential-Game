@@ -85,3 +85,23 @@ def test_same_seed_identical_across_processes():
     ]
     assert outs[0].returncode == 0, outs[0].stderr
     assert outs[0].stdout == outs[1].stdout and len(outs[0].stdout.strip()) == 64
+
+
+def test_tail_and_fused_scores():
+    from bidrig.models import Fused, TailScore, _upper_pvalue
+
+    rng = np.random.default_rng(0)
+    X = rng.normal(size=(400, len(ALL_FEATURES)))
+    y = (np.arange(400) >= 300).astype(int)
+    X[y == 1, ALL_FEATURES.index("part_group")] += 6  # an unseen-direction signal
+    t = TailScore().fit(X, y)
+    s = t.score(X)
+    assert s[y == 1].mean() > s[y == 0].mean() + 1
+    assert (s >= 0).all()
+    assert np.allclose(
+        _upper_pvalue(np.array([1.0, 2.0, 3.0]), np.array([0.0, 2.0, 9.0])), [1, 0.75, 0.25]
+    )
+    f = Fused(("dep", "part")).fit(X, y)
+    fs = f.score(X)
+    assert fs[y == 1].mean() > fs[y == 0].mean()
+    assert make_design("full_fused") is not None and make_design("tail_only") is not None

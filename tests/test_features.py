@@ -132,3 +132,17 @@ def test_time_null_keeps_each_firms_residuals():
     for j in range(r.shape[1]):
         assert np.allclose(np.sort(rp[~np.isnan(rp[:, j]), j]), np.sort(r[~np.isnan(r[:, j]), j]))
     assert not np.allclose(rp, r, equal_nan=True)
+
+
+def test_exclusive_group_finds_mutually_exclusive_firms():
+    from bidrig.features import participation_features
+
+    rng = np.random.default_rng(0)
+    mask = rng.random((60, 8)) < 0.6
+    honest = participation_features(mask)["part_group"]
+    rig = mask.copy()
+    turn = np.arange(60) % 3  # firms 0-2: exactly one of them bids per tender
+    rig[:, :3] = False
+    rig[np.arange(60), turn] = True
+    assert participation_features(rig)["part_group"] > honest + 3
+    assert participation_features(rig)["part_rate"] < participation_features(mask)["part_rate"]

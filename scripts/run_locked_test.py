@@ -17,7 +17,15 @@ import time
 from _common import RESULTS, ROOT, parse_seeds
 
 from bidrig.datasets import FEATURE_VERSION
-from bidrig.models import BASELINES, DESIGNS, GBM_PARAMS
+from bidrig.models import (
+    BASELINES,
+    DESIGNS,
+    FUSED,
+    GBM_PARAMS,
+    MONOTONE,
+    TAIL_DIRECTIONS,
+    TAIL_MARGIN,
+)
 from bidrig.protocol import criteria, evaluate, score_split
 from bidrig.report import comparison_table, design_table
 
@@ -26,7 +34,20 @@ LOG = RESULTS / "locked_runs.jsonl"
 
 def design_hash(design: str) -> str:
     h = hashlib.sha256()
-    h.update(json.dumps([design, DESIGNS.get(design), GBM_PARAMS, FEATURE_VERSION]).encode())
+    h.update(
+        json.dumps(
+            [
+                design,
+                DESIGNS.get(design),
+                FUSED.get(design),
+                MONOTONE.get(design),
+                GBM_PARAMS,
+                TAIL_DIRECTIONS,
+                TAIL_MARGIN,
+                FEATURE_VERSION,
+            ]
+        ).encode()
+    )
     for p in sorted((ROOT / "bidrig").glob("*.py")):
         h.update(p.read_bytes())
     return h.hexdigest()[:16]

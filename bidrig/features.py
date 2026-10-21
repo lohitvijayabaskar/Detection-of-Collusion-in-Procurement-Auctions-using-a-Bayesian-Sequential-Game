@@ -304,6 +304,52 @@ def dependence_features(
     return feats
 
 
+# ---------------------------------------------------------------- participation
+def exclusive_group(z: np.ndarray, join: float = -1.0) -> float:
+    """Greedy group of firms that rarely bid together.
+
+    ``z`` is the symmetric phi*sqrt(T) participation matrix (NaN = undefined). Start from
+    the most negative pair and add the firm with the most negative mean z to the group
+    while that mean is below ``join``. Score = -(sum of within-group z) / sqrt(#pairs).
+    """
+    zz = np.where(np.isfinite(z), z, 0.0)
+    zz = np.minimum(zz, zz.T) if not np.allclose(zz, zz.T) else zz
+    n = zz.shape[0]
+    if n < 2:
+        return np.nan
+    off = zz + np.diag(np.full(n, np.inf))
+    i, j = np.unravel_index(int(np.argmin(off)), off.shape)
+    group = [int(i), int(j)]
+    while len(group) < n:
+        rest = np.array([k for k in range(n) if k not in group])
+        means = zz[np.ix_(rest, group)].mean(axis=1)
+        best = int(np.argmin(means))
+        if means[best] >= join:
+            break
+        group.append(int(rest[best]))
+    g = np.array(sorted(group))
+    sub = zz[np.ix_(g, g)][np.triu_indices(len(g), k=1)]
+    return float(-sub.sum() / np.sqrt(sub.size))
+
+
+def participation_features(mask: np.ndarray) -> dict[str, float]:
+    t_count, n = mask.shape
+    nb = mask.sum(axis=1)
+    m = mask.astype(float)
+    p = m.mean(axis=0)
+    sd = np.sqrt(p * (1 - p))
+    ok = sd > 0
+    with np.errstate(invalid="ignore", divide="ignore"):
+        phi = (((m - p).T @ (m - p)) / t_count) / np.outer(sd, sd)
+    phi[~np.outer(ok, ok)] = np.nan
+    np.fill_diagonal(phi, np.nan)
+    return {
+        "part_rate": float(nb.mean() / n),
+        "part_low": float((nb <= 2).mean()),
+        "part_group": exclusive_group(phi * np.sqrt(t_count)),
+    }
+
+
 # ---------------------------------------------------------------- per-tender series
 def tender_series(bids: np.ndarray, estimate: np.ndarray) -> dict[str, np.ndarray]:
     mask = ~np.isnan(bids)
@@ -396,6 +442,7 @@ def market_features(bids: np.ndarray, estimate: np.ndarray, rng: np.random.Gener
         warnings.simplefilter("ignore", RuntimeWarning)
         feats.update(literature_features(bids))
         feats.update(dependence_features(bids, estimate, rng))
+        feats.update(participation_features(~np.isnan(bids)))
         feats.update(change_features(bids, estimate))
         feats.update(sequential_features(bids, estimate))
     return feats
@@ -405,6 +452,7 @@ FEATURE_GROUPS = {
     "lit": tuple(f"lit_{s}_{a}" for s in LIT_SCREENS for a in ("mean", "median", "sd")),
     "dep": tuple(f"dep_{k}{sfx}" for k in DEP_STATS for sfx in ("", "_t"))
     + ("dep_cobid_min", "dep_cobid_bottom3"),
+    "part": ("part_rate", "part_low", "part_group"),
     "change": tuple(f"chg_{k}" for k in SERIES),
     "seq": ("seq_cusum", "seq_hmm_max", "seq_hmm_mean"),
 }

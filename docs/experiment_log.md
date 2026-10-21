@@ -59,3 +59,29 @@ weaker than the literature GBM at this scale.
 - Command: `build_features.py --seeds 0-9`, then `run_validation.py --tag v2 ...` (same designs).
 - Outcome: dep_gbm 0.771 → 0.826 [0.814, 0.836]; full_gbm 0.847 → 0.862 [0.853, 0.871]; knowledge_gbm 0.770 → 0.822. full_gbm per mechanism: price_fixing 0.972, complementary 0.957, rotation 0.951, cover 0.945, intermittent 0.856, noisy_defecting 0.794, bid_suppression 0.751, partial_fringe 0.668. FA in/size/spread 0.051/0.073/0.053. Validation criteria: C1 fail, C2-C4 pass. KEPT.
 - Ablation: full_minus_change 0.864, full_minus_seq 0.862, full_minus_dep 0.801. The change and seq groups add nothing measurable; dep adds about 0.06.
+
+## 2026-10-21 I2 (workstream: detector): participation features + knowledge tail score fused with the GBM (feature v3)
+
+- Hypothesis: under LOMO a held-out mechanism's unique signal (e.g. bid suppression's missing bids) cannot be learned from the other mechanisms. A tail score with label-free, knowledge-fixed directions (`TAIL_DIRECTIONS`), fused with the GBM through honest p-values (`Fused`, score = -log min(p_gbm, p_tail)), should raise the worst mechanisms. Falsifier: no gain in min-mechanism or macro LOMO AUC beyond the CI.
+- Change: `part` group (`part_rate`, `part_low`, `part_group` greedy mutual-exclusion group); `TailScore`, `Fused`; designs full_part_gbm, lit_dep_part_gbm, tail_only, full_fused, lit_dep_part_fused.
+- Command: `build_features.py --seeds 0-9` then `run_validation.py --tag v3 --designs full_gbm,full_part_gbm,lit_dep_part_gbm,tail_only,full_fused,lit_dep_part_fused`.
+- Outcome (macro LOMO AUC / min mechanism): full_gbm 0.862 / 0.668; full_part_gbm 0.863 / 0.677; lit_dep_part_gbm 0.866 [0.859, 0.874] / 0.682; tail_only 0.774 / 0.600; full_fused 0.864 / 0.687; lit_dep_part_fused 0.866 / 0.688. full_fused raised bid_suppression 0.751 → 0.811 but lowered noisy_defecting 0.794 → 0.767 and intermittent 0.856 → 0.836. All CIs overlap full_gbm's. FA ≤ 0.065 everywhere.
+- Decision: NO validation gain. The code stays (superset features, extra designs) but the reference design remains full_gbm. No-gain count for the detector workstream: 1.
+
+## 2026-10-21 I3 (detector): pair-maximum statistics for small cartels (prototype, falsified before implementation)
+
+- Hypothesis: a top-3 mean dilutes a 2-3 firm cartel's single pair; the maximum pair statistic (time null) should separate partial_fringe better.
+- Command: scratch prototype on 120 fresh tuning-spec markets per mechanism (seed 77, split label "proto", not a benchmark split).
+- Outcome: univariate AUC vs honest: pair-correlation max 0.732 (partial_fringe), 0.448 (noisy), 0.457 (suppression); "both above median and within 10 %" pair max 0.613 / 0.405 / 0.398. Top-3 pair correlation already gives about 0.75 on partial_fringe (v2 diagnostic). No gain, not implemented. No-gain count: 2.
+
+## 2026-10-21 I4 (detector): monotone GBM constraints along the knowledge directions
+
+- Hypothesis: constraining the GBM to be monotone in `TAIL_DIRECTIONS` stops it fitting mechanism-specific non-monotone patterns, so held-out mechanisms transfer better. Falsifier: no gain beyond the CI.
+- Command: `run_validation.py --tag v3mono --designs full_gbm,lit_dep_part_gbm,full_part_mono,lit_dep_part_mono`.
+- Outcome (macro / min mechanism): full_gbm 0.862 / 0.668; lit_dep_part_gbm 0.866 / 0.682; full_part_mono 0.865 / 0.674; lit_dep_part_mono 0.867 [0.859, 0.874] / 0.678. Per mechanism (lit_dep_part_mono): noisy_defecting 0.806, bid_suppression 0.760, partial_fringe 0.674. No significant gain.
+- No-gain count for the detector workstream: 3 (I2, I3, I4). STOP RULE reached for this workstream.
+
+## 2026-10-21 Design freeze
+
+- On validation, C1 is unmet for partial_fringe (0.67-0.69 across designs), bid_suppression (0.75-0.81) and noisy_defecting (0.77-0.81). C2, C3 and C4 pass on validation for full_gbm.
+- Freeze rule (keep a change only if validation improves): I1 is the only kept change. The frozen design is **full_gbm** (groups lit, dep, change, seq; GBM_PARAMS as committed; feature v3, whose groups are identical to v2's for these columns). Only this design gets a locked run; the others are not run on test, so test results cannot be used to choose among them.
