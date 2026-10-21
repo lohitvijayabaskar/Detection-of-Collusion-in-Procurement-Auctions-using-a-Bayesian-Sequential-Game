@@ -110,3 +110,22 @@ Prototypes use 150 fresh markets per mechanism (seed 78, split label "proto"; ha
 
 - Both workstreams that target the unmet criterion C1 (detector features and within-market change detection) ended by the three-iterations-without-gain rule. Making the simulator's mechanisms easier to detect would change the benchmark to fit the detector, so it was not done. Real data needs a labelled per-bid dataset from the user (rule 5).
 - Locked result stands as run 1 (full_gbm): C1 not met (documented as a limitation), C2-C4 met. The source after the revert matches the locked design's source.
+
+## 2026-10-22 D1: real data source (user approved the download)
+
+- Source: supplementary file of García Rodríguez, Rodríguez-Montequín, Ballesteros-Pérez, Love, Signor (2022), "Collusion detection in public procurement auctions with machine learning algorithms", Automation in Construction 133, 104047. URL `https://ars.els-cdn.com/content/image/1-s2.0-S0926580521004982-mmc2.zip`, 1,530,786 bytes, sha256 bcf4bc280227326bfa3e761c4163173fd29c5452c37d65d08269a00a5fa209f0.
+- Stored outside the repo at `C:/Users/Lohit Vijayabaskar/real_data/rodriguez2022/` (`raw/` zip; `data/` extracted CSVs and README). The bundled `Collusion_Detection_Code.py` was not extracted or run. The data is not committed (licence not checked).
+- Inspection (`python -I`, read-only):
+
+| dataset | bids | tenders | median bids/tender | firm IDs | pre-tender estimate | per-bid member label (original) | tenders mixing members and non-members |
+|---|---|---|---|---|---|---|---|
+| Japan (Okinawa) | 13,515 | 1,080 | 12 | yes, 1,665 firms (median 6 tenders per firm) | yes | 8 % of bids | 216 |
+| Italy (Turin) | 20,286 | 278 | 70 | yes, 821 firms (median 11) | yes | 40 % | 275 |
+| Brazil (Petrobras) | 683 | 101 | 5 | yes, 272 firms (median 1) | yes | 19 % | 6 |
+| USA | 7,004 | 3,754 | 2 | yes, 120 firms (median 9) | no | 12 % | 252 |
+| Switzerland GR / See-Gaster | 21,231 | 4,344 | 4 | no | no | 59 % | 1,717 |
+| Switzerland Ticino | 1,629 | 224 | 7 | no (consortium only) | no | tender label only | 0 |
+
+- `Collusive_competitor` (the paper's thresholded label) is constant within every tender, so it is a tender label. `Collusive_competitor_original` is per bid (cartel membership).
+- Fit to this project: Japan, Italy and Brazil have everything the detector uses (bids, persistent firm IDs, an estimate). The USA lacks an estimate, and the Swiss sets lack firm IDs (literature screens only).
+- Gaps: no cartel identifier within a dataset. Italy's `Cartel_name` is 0/1, which looks like a membership flag, not a cartel identity; this is unverified. Leave-one-cartel-out therefore becomes leave-one-dataset-out. The data has no natural "market" unit of repeated tenders, so one has to be defined (e.g. windows of consecutive tenders), and that choice changes what the market-level score means. Date values in Brazil include a sentinel (-922337203).
