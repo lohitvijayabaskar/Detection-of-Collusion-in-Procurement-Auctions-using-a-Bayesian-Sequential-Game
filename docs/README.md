@@ -11,6 +11,6 @@
 | `frozen_design_rl_screens.md` | Proposed frozen design of the `rl_screens` variant (no locked run yet) |
 | `figures/` | Paper figures (PNG) with their data tables (`data/`) and an index (`README.md`) |
 
-Result files live in `../results/` (never deleted); logs in `../results/logs/`.
-Report files (`Bid-Rigging_Detection_Project_Report.pdf`, `report/`, `bid_rigging_report.pdf`)
-were produced from the report document and are not regenerated automatically.
+Result files live in `../results/`; raw run output in `../results/logs/`.
+`bid_rigging_report_v2.pdf` is the compiled project report. Its editable source is the online
+report document; it is not regenerated automatically.
