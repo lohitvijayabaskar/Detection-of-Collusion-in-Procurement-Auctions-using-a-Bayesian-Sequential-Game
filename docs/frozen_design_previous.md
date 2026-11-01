@@ -1,4 +1,4 @@
-# Proposed frozen design: `previous`
+# Frozen design: `previous`
 
 Status: FROZEN on 2026-11-01 with the user's approval of the hash fix and the freeze. The
 freeze hash is `90b0cbe63f309f0e`, computed by `scripts/run_locked_test.py` (`design_hash("previous")`).
