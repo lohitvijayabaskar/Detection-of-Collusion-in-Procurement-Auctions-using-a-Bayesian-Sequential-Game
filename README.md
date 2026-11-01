@@ -15,8 +15,8 @@ run and `docs/claims_table.md` for what is supported.
 | `previous` (run 2): without the within-firm null | 0.856 [0.846, 0.866] | 0.738 | no | yes | yes | yes |
 | `stat_auc` (run 3): validation-tuned logistic model | 0.862 [0.854, 0.869] | 0.805 | no | yes | yes | yes |
 
-A fourth variant, `rl_screens` (screen-subset selection by a bandit), is built and being
-validated; it has no locked run yet. Code layout and how to add a detector: `CLAUDE.md`.
+A fourth variant, `rl_screens` (screen-subset selection by a bandit), matches `full_gbm` on
+validation (0.863 vs 0.862, paired +0.001 [-0.001, 0.003]); it has no locked run yet. Code layout and how to add a detector: `CLAUDE.md`.
 
 ## Locked result for `full_gbm` (run 1, seeds 0-9, 95 % bootstrap CIs)
 

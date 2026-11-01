@@ -1,0 +1,665 @@
+{
+ "tag": "rl_screens_v1",
+ "variant": "rl_screens",
+ "reference": "full_gbm",
+ "split": "validation",
+ "feature_version": 3,
+ "seeds": "0-9",
+ "n_boot": 300,
+ "scale": 1.0,
+ "results": {
+  "full_gbm::auc[bid_suppression@in]": {
+   "point": 0.78184,
+   "lo": 0.7445569999999999,
+   "hi": 0.818941
+  },
+  "full_gbm::auc[bid_suppression@size]": {
+   "point": 0.7412400000000001,
+   "lo": 0.691788,
+   "hi": 0.789365
+  },
+  "full_gbm::auc[bid_suppression@spread]": {
+   "point": 0.7296,
+   "lo": 0.6755369999999999,
+   "hi": 0.7766689999999999
+  },
+  "full_gbm::auc[bid_suppression]": {
+   "point": 0.7507511111111109,
+   "lo": 0.7219737777777778,
+   "hi": 0.7831567777777777
+  },
+  "full_gbm::auc[complementary@in]": {
+   "point": 0.959,
+   "lo": 0.936417,
+   "hi": 0.975753
+  },
+  "full_gbm::auc[complementary@size]": {
+   "point": 0.95504,
+   "lo": 0.925299,
+   "hi": 0.976897
+  },
+  "full_gbm::auc[complementary@spread]": {
+   "point": 0.9578,
+   "lo": 0.9370970000000001,
+   "hi": 0.9731489999999999
+  },
+  "full_gbm::auc[complementary]": {
+   "point": 0.9569066666666668,
+   "lo": 0.9430759999999999,
+   "hi": 0.9685532222222223
+  },
+  "full_gbm::auc[cover_bidding@in]": {
+   "point": 0.9537199999999999,
+   "lo": 0.93516,
+   "hi": 0.970381
+  },
+  "full_gbm::auc[cover_bidding@size]": {
+   "point": 0.9332,
+   "lo": 0.9024740000000001,
+   "hi": 0.953966
+  },
+  "full_gbm::auc[cover_bidding@spread]": {
+   "point": 0.9472400000000001,
+   "lo": 0.928019,
+   "hi": 0.9655029999999999
+  },
+  "full_gbm::auc[cover_bidding]": {
+   "point": 0.9449022222222222,
+   "lo": 0.9307482222222223,
+   "hi": 0.958004111111111
+  },
+  "full_gbm::auc[intermittent@in]": {
+   "point": 0.8517199999999999,
+   "lo": 0.807721,
+   "hi": 0.8868919999999999
+  },
+  "full_gbm::auc[intermittent@size]": {
+   "point": 0.8546400000000001,
+   "lo": 0.8223400000000001,
+   "hi": 0.8840779999999999
+  },
+  "full_gbm::auc[intermittent@spread]": {
+   "point": 0.8596,
+   "lo": 0.8273309999999999,
+   "hi": 0.8953949999999999
+  },
+  "full_gbm::auc[intermittent]": {
+   "point": 0.8555333333333334,
+   "lo": 0.8343654444444445,
+   "hi": 0.8745568888888889
+  },
+  "full_gbm::auc[noisy_defecting@in]": {
+   "point": 0.81796,
+   "lo": 0.774335,
+   "hi": 0.8596899999999998
+  },
+  "full_gbm::auc[noisy_defecting@size]": {
+   "point": 0.7911599999999999,
+   "lo": 0.7433750000000001,
+   "hi": 0.836392
+  },
+  "full_gbm::auc[noisy_defecting@spread]": {
+   "point": 0.77296,
+   "lo": 0.7276509999999999,
+   "hi": 0.8190139999999999
+  },
+  "full_gbm::auc[noisy_defecting]": {
+   "point": 0.7944622222222223,
+   "lo": 0.7690776666666667,
+   "hi": 0.8181103333333333
+  },
+  "full_gbm::auc[partial_fringe@in]": {
+   "point": 0.6895600000000001,
+   "lo": 0.6218910000000001,
+   "hi": 0.749644
+  },
+  "full_gbm::auc[partial_fringe@size]": {
+   "point": 0.62492,
+   "lo": 0.577322,
+   "hi": 0.6826979999999999
+  },
+  "full_gbm::auc[partial_fringe@spread]": {
+   "point": 0.68672,
+   "lo": 0.6375890000000001,
+   "hi": 0.737694
+  },
+  "full_gbm::auc[partial_fringe]": {
+   "point": 0.6677155555555554,
+   "lo": 0.6399212222222223,
+   "hi": 0.697155
+  },
+  "full_gbm::auc[price_fixing@in]": {
+   "point": 0.9736800000000001,
+   "lo": 0.9574990000000001,
+   "hi": 0.98788
+  },
+  "full_gbm::auc[price_fixing@size]": {
+   "point": 0.9618399999999999,
+   "lo": 0.9401689999999999,
+   "hi": 0.9815319999999998
+  },
+  "full_gbm::auc[price_fixing@spread]": {
+   "point": 0.9784799999999999,
+   "lo": 0.961566,
+   "hi": 0.9904820000000001
+  },
+  "full_gbm::auc[price_fixing]": {
+   "point": 0.972271111111111,
+   "lo": 0.961731111111111,
+   "hi": 0.9815784444444444
+  },
+  "full_gbm::auc[rotation@in]": {
+   "point": 0.95448,
+   "lo": 0.931173,
+   "hi": 0.9727239999999999
+  },
+  "full_gbm::auc[rotation@size]": {
+   "point": 0.9405199999999999,
+   "lo": 0.9160639999999999,
+   "hi": 0.963349
+  },
+  "full_gbm::auc[rotation@spread]": {
+   "point": 0.9594799999999999,
+   "lo": 0.934186,
+   "hi": 0.9795719999999999
+  },
+  "full_gbm::auc[rotation]": {
+   "point": 0.9510977777777778,
+   "lo": 0.9323328888888889,
+   "hi": 0.9655174444444444
+  },
+  "full_gbm::fa[honest@in]": {
+   "point": 0.05100000000000001,
+   "lo": 0.034,
+   "hi": 0.06700000000000002
+  },
+  "full_gbm::fa[honest@size]": {
+   "point": 0.07300000000000001,
+   "lo": 0.048,
+   "hi": 0.10400000000000001
+  },
+  "full_gbm::fa[honest@spread]": {
+   "point": 0.053000000000000005,
+   "lo": 0.034,
+   "hi": 0.07452499999999998
+  },
+  "full_gbm::fa_lomo_max[honest@in]": {
+   "point": 0.069,
+   "lo": 0.05500000000000001,
+   "hi": 0.09252499999999998
+  },
+  "full_gbm::fa_lomo_max[honest@size]": {
+   "point": 0.099,
+   "lo": 0.08,
+   "hi": 0.13452499999999998
+  },
+  "full_gbm::fa_lomo_max[honest@spread]": {
+   "point": 0.08,
+   "lo": 0.06695000000000002,
+   "hi": 0.106525
+  },
+  "full_gbm::macro_auc": {
+   "point": 0.8617049999999999,
+   "lo": 0.8533564861111111,
+   "hi": 0.8705494583333333
+  },
+  "full_gbm::macro_prec10": {
+   "point": 0.8095394736842105,
+   "lo": 0.7938898026315789,
+   "hi": 0.8258305921052631
+  },
+  "full_gbm::prec10[bid_suppression]": {
+   "point": 0.5763157894736843,
+   "lo": 0.5263157894736842,
+   "hi": 0.6382236842105262
+  },
+  "full_gbm::prec10[complementary]": {
+   "point": 0.9921052631578948,
+   "lo": 0.9749342105263157,
+   "hi": 1.0
+  },
+  "full_gbm::prec10[cover_bidding]": {
+   "point": 0.963157894736842,
+   "lo": 0.9394736842105263,
+   "hi": 0.9842105263157894
+  },
+  "full_gbm::prec10[intermittent]": {
+   "point": 0.8342105263157894,
+   "lo": 0.7894736842105263,
+   "hi": 0.8855921052631579
+  },
+  "full_gbm::prec10[noisy_defecting]": {
+   "point": 0.7052631578947368,
+   "lo": 0.6421052631578947,
+   "hi": 0.7500000000000001
+  },
+  "full_gbm::prec10[partial_fringe]": {
+   "point": 0.42631578947368415,
+   "lo": 0.3657894736842105,
+   "hi": 0.4882236842105262
+  },
+  "full_gbm::prec10[price_fixing]": {
+   "point": 0.9973684210526315,
+   "lo": 0.9894736842105264,
+   "hi": 1.0
+  },
+  "full_gbm::prec10[rotation]": {
+   "point": 0.9815789473684209,
+   "lo": 0.9512499999999999,
+   "hi": 0.9973684210526315
+  },
+  "full_gbm::tpr[bid_suppression]": {
+   "point": 0.29333333333333333,
+   "lo": 0.24933333333333332,
+   "hi": 0.3487
+  },
+  "full_gbm::tpr[complementary]": {
+   "point": 0.8573333333333334,
+   "lo": 0.8186666666666667,
+   "hi": 0.8900333333333335
+  },
+  "full_gbm::tpr[cover_bidding]": {
+   "point": 0.7693333333333332,
+   "lo": 0.7139666666666666,
+   "hi": 0.8180333333333333
+  },
+  "full_gbm::tpr[intermittent]": {
+   "point": 0.5626666666666666,
+   "lo": 0.5246333333333333,
+   "hi": 0.6060333333333333
+  },
+  "full_gbm::tpr[noisy_defecting]": {
+   "point": 0.4373333333333333,
+   "lo": 0.39263333333333333,
+   "hi": 0.4774
+  },
+  "full_gbm::tpr[partial_fringe]": {
+   "point": 0.21333333333333337,
+   "lo": 0.16933333333333334,
+   "hi": 0.25733333333333336
+  },
+  "full_gbm::tpr[price_fixing]": {
+   "point": 0.9000000000000001,
+   "lo": 0.8699666666666667,
+   "hi": 0.9319999999999998
+  },
+  "full_gbm::tpr[rotation]": {
+   "point": 0.82,
+   "lo": 0.76,
+   "hi": 0.8727
+  },
+  "rl_screens-full_gbm::auc[bid_suppression]": {
+   "point": 3.5555555555677465e-05,
+   "lo": -0.007470222222222288,
+   "hi": 0.007016999999999942
+  },
+  "rl_screens-full_gbm::auc[complementary]": {
+   "point": 0.0002666666666666373,
+   "lo": -0.0017426666666666422,
+   "hi": 0.0021382222222221772
+  },
+  "rl_screens-full_gbm::auc[cover_bidding]": {
+   "point": 0.000808888888888859,
+   "lo": -0.0024640000000000963,
+   "hi": 0.004529444444444456
+  },
+  "rl_screens-full_gbm::auc[intermittent]": {
+   "point": 0.001168888888888886,
+   "lo": -0.0025570000000001277,
+   "hi": 0.0044446666666665855
+  },
+  "rl_screens-full_gbm::auc[noisy_defecting]": {
+   "point": 0.003244444444444272,
+   "lo": -0.002140222222222237,
+   "hi": 0.009663111111111122
+  },
+  "rl_screens-full_gbm::auc[partial_fringe]": {
+   "point": 0.004613333333333469,
+   "lo": -0.004989333333333472,
+   "hi": 0.013966555555555598
+  },
+  "rl_screens-full_gbm::auc[price_fixing]": {
+   "point": -0.00042666666666657527,
+   "lo": -0.0025518888888888835,
+   "hi": 0.001584666666666657
+  },
+  "rl_screens-full_gbm::auc[rotation]": {
+   "point": 0.0007911111111111868,
+   "lo": -0.00206588888888875,
+   "hi": 0.003816333333333232
+  },
+  "rl_screens-full_gbm::macro_auc": {
+   "point": 0.0013127777777778293,
+   "lo": -0.0006242777777777541,
+   "hi": 0.0030409027777778203
+  },
+  "rl_screens::auc[bid_suppression@in]": {
+   "point": 0.78648,
+   "lo": 0.747327,
+   "hi": 0.8220640000000001
+  },
+  "rl_screens::auc[bid_suppression@size]": {
+   "point": 0.7395599999999999,
+   "lo": 0.69419,
+   "hi": 0.7876059999999999
+  },
+  "rl_screens::auc[bid_suppression@spread]": {
+   "point": 0.73028,
+   "lo": 0.68227,
+   "hi": 0.7764689999999999
+  },
+  "rl_screens::auc[bid_suppression]": {
+   "point": 0.7507866666666666,
+   "lo": 0.7240925555555555,
+   "hi": 0.7814801111111113
+  },
+  "rl_screens::auc[complementary@in]": {
+   "point": 0.9596399999999999,
+   "lo": 0.935988,
+   "hi": 0.9765659999999999
+  },
+  "rl_screens::auc[complementary@size]": {
+   "point": 0.9572800000000001,
+   "lo": 0.929197,
+   "hi": 0.9778249999999999
+  },
+  "rl_screens::auc[complementary@spread]": {
+   "point": 0.95708,
+   "lo": 0.936184,
+   "hi": 0.9725010000000001
+  },
+  "rl_screens::auc[complementary]": {
+   "point": 0.9571733333333334,
+   "lo": 0.942204,
+   "hi": 0.9684408888888889
+  },
+  "rl_screens::auc[cover_bidding@in]": {
+   "point": 0.9556799999999999,
+   "lo": 0.935776,
+   "hi": 0.972444
+  },
+  "rl_screens::auc[cover_bidding@size]": {
+   "point": 0.9325999999999999,
+   "lo": 0.9043270000000001,
+   "hi": 0.952701
+  },
+  "rl_screens::auc[cover_bidding@spread]": {
+   "point": 0.94908,
+   "lo": 0.928311,
+   "hi": 0.966202
+  },
+  "rl_screens::auc[cover_bidding]": {
+   "point": 0.9457111111111111,
+   "lo": 0.9317853333333334,
+   "hi": 0.9585973333333334
+  },
+  "rl_screens::auc[intermittent@in]": {
+   "point": 0.8530800000000001,
+   "lo": 0.8014699999999999,
+   "hi": 0.8899469999999999
+  },
+  "rl_screens::auc[intermittent@size]": {
+   "point": 0.8526399999999998,
+   "lo": 0.819729,
+   "hi": 0.883952
+  },
+  "rl_screens::auc[intermittent@spread]": {
+   "point": 0.86344,
+   "lo": 0.8300529999999999,
+   "hi": 0.8977009999999999
+  },
+  "rl_screens::auc[intermittent]": {
+   "point": 0.8567022222222223,
+   "lo": 0.8347831111111109,
+   "hi": 0.876694
+  },
+  "rl_screens::auc[noisy_defecting@in]": {
+   "point": 0.8202400000000001,
+   "lo": 0.774799,
+   "hi": 0.8636520000000001
+  },
+  "rl_screens::auc[noisy_defecting@size]": {
+   "point": 0.79348,
+   "lo": 0.7400909999999999,
+   "hi": 0.842961
+  },
+  "rl_screens::auc[noisy_defecting@spread]": {
+   "point": 0.7777199999999999,
+   "lo": 0.732513,
+   "hi": 0.8214309999999999
+  },
+  "rl_screens::auc[noisy_defecting]": {
+   "point": 0.7977066666666666,
+   "lo": 0.7702955555555556,
+   "hi": 0.822998
+  },
+  "rl_screens::auc[partial_fringe@in]": {
+   "point": 0.68836,
+   "lo": 0.626866,
+   "hi": 0.7460559999999999
+  },
+  "rl_screens::auc[partial_fringe@size]": {
+   "point": 0.62992,
+   "lo": 0.58235,
+   "hi": 0.689816
+  },
+  "rl_screens::auc[partial_fringe@spread]": {
+   "point": 0.6956,
+   "lo": 0.648908,
+   "hi": 0.7425579999999999
+  },
+  "rl_screens::auc[partial_fringe]": {
+   "point": 0.6723288888888889,
+   "lo": 0.6480434444444444,
+   "hi": 0.7004526666666666
+  },
+  "rl_screens::auc[price_fixing@in]": {
+   "point": 0.9726799999999999,
+   "lo": 0.956378,
+   "hi": 0.986764
+  },
+  "rl_screens::auc[price_fixing@size]": {
+   "point": 0.9626800000000001,
+   "lo": 0.94199,
+   "hi": 0.9810019999999999
+  },
+  "rl_screens::auc[price_fixing@spread]": {
+   "point": 0.9775200000000002,
+   "lo": 0.9604050000000001,
+   "hi": 0.990124
+  },
+  "rl_screens::auc[price_fixing]": {
+   "point": 0.9718444444444444,
+   "lo": 0.9616062222222221,
+   "hi": 0.9812124444444444
+  },
+  "rl_screens::auc[rotation@in]": {
+   "point": 0.9544,
+   "lo": 0.9326580000000001,
+   "hi": 0.9714059999999999
+  },
+  "rl_screens::auc[rotation@size]": {
+   "point": 0.9411999999999999,
+   "lo": 0.916095,
+   "hi": 0.9644959999999999
+  },
+  "rl_screens::auc[rotation@spread]": {
+   "point": 0.9613999999999999,
+   "lo": 0.9387789999999999,
+   "hi": 0.9812409999999999
+  },
+  "rl_screens::auc[rotation]": {
+   "point": 0.951888888888889,
+   "lo": 0.9348028888888888,
+   "hi": 0.966118
+  },
+  "rl_screens::fa[honest@in]": {
+   "point": 0.051000000000000004,
+   "lo": 0.030475000000000006,
+   "hi": 0.07352499999999998
+  },
+  "rl_screens::fa[honest@size]": {
+   "point": 0.078,
+   "lo": 0.051000000000000004,
+   "hi": 0.11000000000000001
+  },
+  "rl_screens::fa[honest@spread]": {
+   "point": 0.05299999999999999,
+   "lo": 0.028950000000000014,
+   "hi": 0.07652499999999998
+  },
+  "rl_screens::fa_lomo_max[honest@in]": {
+   "point": 0.07,
+   "lo": 0.05700000000000001,
+   "hi": 0.09352499999999998
+  },
+  "rl_screens::fa_lomo_max[honest@size]": {
+   "point": 0.10900000000000001,
+   "lo": 0.08695000000000001,
+   "hi": 0.146
+  },
+  "rl_screens::fa_lomo_max[honest@spread]": {
+   "point": 0.083,
+   "lo": 0.07200000000000001,
+   "hi": 0.11100000000000002
+  },
+  "rl_screens::macro_auc": {
+   "point": 0.8630177777777778,
+   "lo": 0.8547626527777779,
+   "hi": 0.8714634861111111
+  },
+  "rl_screens::macro_prec10": {
+   "point": 0.8065789473684211,
+   "lo": 0.7945641447368421,
+   "hi": 0.824860197368421
+  },
+  "rl_screens::prec10[bid_suppression]": {
+   "point": 0.5736842105263158,
+   "lo": 0.5210526315789473,
+   "hi": 0.6329605263157894
+  },
+  "rl_screens::prec10[complementary]": {
+   "point": 0.9894736842105264,
+   "lo": 0.9736842105263157,
+   "hi": 1.0
+  },
+  "rl_screens::prec10[cover_bidding]": {
+   "point": 0.9631578947368421,
+   "lo": 0.9473684210526315,
+   "hi": 0.9868421052631579
+  },
+  "rl_screens::prec10[intermittent]": {
+   "point": 0.8236842105263158,
+   "lo": 0.7894736842105263,
+   "hi": 0.8789473684210526
+  },
+  "rl_screens::prec10[noisy_defecting]": {
+   "point": 0.7105263157894737,
+   "lo": 0.6473684210526315,
+   "hi": 0.7578947368421053
+  },
+  "rl_screens::prec10[partial_fringe]": {
+   "point": 0.4131578947368421,
+   "lo": 0.3684210526315789,
+   "hi": 0.48157894736842105
+  },
+  "rl_screens::prec10[price_fixing]": {
+   "point": 0.9947368421052631,
+   "lo": 0.9842105263157894,
+   "hi": 1.0
+  },
+  "rl_screens::prec10[rotation]": {
+   "point": 0.9842105263157894,
+   "lo": 0.9631578947368421,
+   "hi": 0.9973684210526315
+  },
+  "rl_screens::tpr[bid_suppression]": {
+   "point": 0.3106666666666667,
+   "lo": 0.26393333333333335,
+   "hi": 0.3693333333333334
+  },
+  "rl_screens::tpr[complementary]": {
+   "point": 0.8560000000000001,
+   "lo": 0.8193,
+   "hi": 0.8893333333333334
+  },
+  "rl_screens::tpr[cover_bidding]": {
+   "point": 0.768,
+   "lo": 0.7233,
+   "hi": 0.8167
+  },
+  "rl_screens::tpr[intermittent]": {
+   "point": 0.5773333333333333,
+   "lo": 0.5353,
+   "hi": 0.6207
+  },
+  "rl_screens::tpr[noisy_defecting]": {
+   "point": 0.45200000000000007,
+   "lo": 0.4,
+   "hi": 0.49803333333333333
+  },
+  "rl_screens::tpr[partial_fringe]": {
+   "point": 0.19733333333333336,
+   "lo": 0.15466666666666665,
+   "hi": 0.24336666666666665
+  },
+  "rl_screens::tpr[price_fixing]": {
+   "point": 0.9040000000000001,
+   "lo": 0.8753,
+   "hi": 0.9333333333333333
+  },
+  "rl_screens::tpr[rotation]": {
+   "point": 0.8146666666666667,
+   "lo": 0.744,
+   "hi": 0.872
+  },
+  "rl_screens::base_rate[bid_suppression]": {
+   "point": 0.2
+  },
+  "rl_screens::base_rate[complementary]": {
+   "point": 0.2
+  },
+  "rl_screens::base_rate[cover_bidding]": {
+   "point": 0.2
+  },
+  "rl_screens::base_rate[intermittent]": {
+   "point": 0.2
+  },
+  "rl_screens::base_rate[noisy_defecting]": {
+   "point": 0.2
+  },
+  "rl_screens::base_rate[partial_fringe]": {
+   "point": 0.2
+  },
+  "rl_screens::base_rate[price_fixing]": {
+   "point": 0.2
+  },
+  "rl_screens::base_rate[rotation]": {
+   "point": 0.2
+  },
+  "full_gbm::base_rate[bid_suppression]": {
+   "point": 0.2
+  },
+  "full_gbm::base_rate[complementary]": {
+   "point": 0.2
+  },
+  "full_gbm::base_rate[cover_bidding]": {
+   "point": 0.2
+  },
+  "full_gbm::base_rate[intermittent]": {
+   "point": 0.2
+  },
+  "full_gbm::base_rate[noisy_defecting]": {
+   "point": 0.2
+  },
+  "full_gbm::base_rate[partial_fringe]": {
+   "point": 0.2
+  },
+  "full_gbm::base_rate[price_fixing]": {
+   "point": 0.2
+  },
+  "full_gbm::base_rate[rotation]": {
+   "point": 0.2
+  }
+ }
+}

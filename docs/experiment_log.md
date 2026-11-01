@@ -268,3 +268,17 @@ Prototypes use 150 fresh markets per mechanism (seed 78, split label "proto"; ha
 - Anonymity: no user-specific path or name remains in `bidrig/`, `scripts/` or `tests/`. The real-data default folder is `data/real` (override with `BIDRIG_REAL_DATA`); `make_figures.py` reads local copies of the old-environment results in `results/old_env/`; `tests/test_no_identifying_paths.py` guards this.
 - `pyproject.toml` now finds subpackages (`bidrig*`).
 - Cleanup: Python caches removed (regenerable). Kept: the feature cache `cache/` (53 MB, gitignored, needed by every run), all of `results/` and `docs/`. Files that were deleted or added outside this session (`docs/Bid-Rigging_Detection_Project_Report.pdf`, `docs/report/*`, untracked `docs/bid_rigging_report.pdf`) were left as they are.
+
+## 2026-11-01 VAR-3 result: `rl_screens` (screen-subset bandit), validation
+
+- Tests: `tests/test_rl_screens.py` (6) and the full suite pass (90 passed, 1 skipped without the real data); smoke (`--seeds 0-1 --scale 0.15 --n-boot 30`) ran end to end (paired -0.014 on that tiny scale, not evidence).
+- Validation (`cd scripts && python run_variant_validation.py --variant rl_screens --tag rl_screens_v1 --seeds 0-9 --n-boot 300`; files `results/variant_rl_screens_v1.{json,md}`, `results/logs/variant_rl_screens_v1.log`; about 50 minutes):
+  - macro LOMO AUC: rl_screens 0.863 [0.855, 0.871]; full_gbm 0.862 [0.853, 0.871]. Paired difference +0.001 [-0.001, 0.003].
+  - macro precision@10 %: 0.807 [0.795, 0.825] vs 0.810 [0.794, 0.826].
+  - Per scheme, every paired difference is between -0.000 and +0.005 with CIs including 0 (partial_fringe +0.005 [-0.005, 0.014]).
+  - False alarms: in 0.051 vs 0.051, size 0.078 vs 0.073, spread 0.053 vs 0.053.
+- Diagnostic (`scripts/rl_screens_arms.py --tag rl_screens_arms_v1`, tuning split only; `results/rl_screens_arms_rl_screens_arms_v1.{json,md}`): over seeds 0-9 the bandit chose lit_dep in 5 seeds, lit_dep_change in 2, lit_dep_seq in 2 and all in 1. It does not simply pick the full set. The four subsets that contain both the literature and dependence groups score within about 0.01 of each other (out-of-fold AUC 0.85-0.90 by seed); single-group subsets score clearly lower (lit 0.79-0.83, dep 0.81-0.86).
+- Result for the hypothesis: NOT falsified (the gap to full_gbm is inside the CI). But adaptivity shows no measurable value: the subsets it can choose between are nearly tied, in line with the earlier ablation (change scans and the sequential layer add nothing).
+- Decision: KEEP the code (comparison variant, rule fixed in the pre-registration). Reported as a negative finding for "choosing screens helps".
+- Limits of this version: one global subset for all markets (not per market), a bandit not PPO. A per-market policy remains untested.
+- Proposed frozen design: hash 002a3d7267394d48 (`docs/frozen_design_rl_screens.md`). The locked run costs about 50 minutes (under the 2-hour threshold) and has not been made.
