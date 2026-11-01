@@ -282,3 +282,14 @@ Prototypes use 150 fresh markets per mechanism (seed 78, split label "proto"; ha
 - Decision: KEEP the code (comparison variant, rule fixed in the pre-registration). Reported as a negative finding for "choosing screens helps".
 - Limits of this version: one global subset for all markets (not per market), a bandit not PPO. A per-market policy remains untested.
 - Proposed frozen design: hash 002a3d7267394d48 (`docs/frozen_design_rl_screens.md`). The locked run costs about 50 minutes (under the 2-hour threshold) and has not been made.
+
+## LOCKED-4: rl_screens (2026-11-01)
+
+Design hash 002a3d7267394d48 (frozen in docs/frozen_design_rl_screens.md), user approved, run once (1529 s).
+Result: macro LOMO AUC 0.872 [0.863, 0.880], precision@10% 0.772 [0.757, 0.788], min mechanism AUC 0.678
+(partial_fringe). Criteria: C1 fail (partial_fringe 0.678, bid_suppression 0.747), C2 pass, C3 pass, C4 pass.
+Honest false alarms: all-mechanism model at most 0.082; worst leave-one-out model 0.106 on honest@size and
+0.098 on honest@spread. Uniform-markup control AUC 0.478.
+Validation said 0.863 (paired +0.001 vs full_gbm); the locked value is 0.872 vs 0.870 for full_gbm. The
+locked runs are separate samples and were not paired, so the difference is not tested. Files:
+results/locked_4_rl_screens.{json,md}.
