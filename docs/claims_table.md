@@ -22,6 +22,7 @@ All numbers are from LOCKED run 1 (`results/locked_1_full_gbm.json`, design full
 | 13 | On real data (tender-level leave-one-dataset-out), pair features from other tenders improve on the literature-screen model | supported for Italy only | REAL run 1: Italy +0.144 [0.078, 0.234]; Japan +0.018 [−0.032, 0.069]; Brazil −0.013 [−0.109, 0.177] |
 | 14 | The learned detector transfers across countries better than a single screen | NOT supported | Japan: CV 0.739 vs full 0.691; Brazil: CV 0.873 vs full 0.742 (difference −0.131 [−0.247, −0.013]) |
 | 15 | A 5 % false-alarm threshold transfers across countries | NOT supported | held-out FA: Italy 0.007, Brazil 0.088, Japan 0.265 |
+| 16 | The within-firm (second) null improves the full detector | supported (validation paired; locked unpaired) | validation paired difference previous - full_gbm -0.014 [-0.019, -0.008]; locked run 2 `previous` 0.856 [0.846, 0.866] vs locked run 1 `full_gbm` 0.870 [0.862, 0.878], CIs overlap slightly; a paired locked comparison was not run |
 
 ## Limitations (state in any write-up)
 
