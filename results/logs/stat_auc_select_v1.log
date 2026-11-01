@@ -1,0 +1,25 @@
+START 17:21:28 stat_auc selection seeds=0-9 (validation only)
+scored 16 configurations in 22s
+# stat_auc selection (validation, seeds 0-9)
+
+| subset | C | macro AUC |
+|---|---|---|
+| dep | 0.01 | 0.7987 |
+| dep | 0.1 | 0.8121 |
+| dep | 1 | 0.8166 |
+| dep | 10 | 0.8165 |
+| lit_dep | 0.01 | 0.8621 |
+| lit_dep | 0.1 | 0.8639  <- chosen |
+| lit_dep | 1 | 0.8601 |
+| lit_dep | 10 | 0.8559 |
+| lit_dep_seq | 0.01 | 0.8607 |
+| lit_dep_seq | 0.1 | 0.8626 |
+| lit_dep_seq | 1 | 0.8585 |
+| lit_dep_seq | 10 | 0.8539 |
+| all | 0.01 | 0.8577 |
+| all | 0.1 | 0.8595 |
+| all | 1 | 0.8553 |
+| all | 10 | 0.8510 |
+
+CHOSEN = ("lit_dep", 0.1)  # freeze this in bidrig/detectors/stat_auc.py
+EXIT=0

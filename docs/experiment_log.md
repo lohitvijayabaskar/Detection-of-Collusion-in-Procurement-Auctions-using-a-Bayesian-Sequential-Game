@@ -206,3 +206,29 @@ Prototypes use 150 fresh markets per mechanism (seed 78, split label "proto"; ha
 - Uniform-markup control: AUC 0.487 [0.456, 0.515], alarm 0.044. Undetectable, as expected.
 - Reading: consistent with validation (previous lower than `full_gbm` by about 0.014 macro AUC). The unpaired locked-test CIs overlap slightly (previous [0.846, 0.866], `full_gbm` [0.862, 0.878]), so they do not by themselves separate the two; a paired locked comparison would need `full_gbm` scored again on the test split, which is a repeat locked run and was not done.
 - No further locked runs for this design.
+
+## 2026-11-01 VAR-2 (pre-registered before any run): variant `stat_auc`, validation-tuned logistic model
+
+- Goal: a plain logistic regression on standardised features, with the feature subset and penalty chosen to maximise validation AUC.
+- Hypothesis: a simple linear model can match `full_gbm`, which would mean the boosting step adds little.
+- Design: median imputation then standardisation (both fitted on the tuning split only), L2 logistic regression (lbfgs, max_iter 2000). Grid: subsets dep, lit_dep, lit_dep_seq, all (groups of FEATURE_GROUPS) x penalty C in {0.01, 0.1, 1, 10} = 16 configurations.
+- Selection rule: the configuration with the highest macro leave-one-scheme-out AUC on the VALIDATION split, seeds 0-9, computed by the existing protocol (`score_split`, `evaluate`); ties go to the first configuration in grid order. The test split is never read during selection. The choice is made once by `scripts/select_stat_auc.py` and then frozen as constants in `bidrig/detectors/stat_auc.py` (so it is part of the design hash). `protocol.py` and `metrics.py` are untouched.
+- Falsifier: at validation, `stat_auc` is below `full_gbm` by more than the paired CI. At the locked stage the criterion from the loop prompt applies: the locked-test AUC within the paired CI of `full_gbm`; a larger gap in either direction is reported as is.
+- Caveat (mandatory): the settings are chosen by validation AUC and the same validation data then reports the result, so the validation number is optimistic and must be labelled "validation-tuned". The locked test is the unbiased estimate.
+- Interpretation rule for step F, fixed in advance: as with `previous`, this is a comparison variant, so rule 8 is read as "keep the code; report whether the hypothesis survived".
+
+## 2026-11-01 VAR-2 result: `stat_auc` (validation-tuned), selection and validation
+
+- Selection (validation only, seeds 0-9, 16 configurations; `scripts/select_stat_auc.py --tag stat_auc_select_v1`; files `results/stat_auc_selection_stat_auc_select_v1.{json,md}`, log `results/logs/stat_auc_select_v1.log`): chosen `lit_dep`, C = 0.1, macro LOMO AUC 0.8639. Neighbours: lit_dep_seq 0.1 -> 0.8626, all 0.1 -> 0.8595, lit_dep 0.01 -> 0.8621, lit_dep 1 -> 0.8601; the best `dep`-only configuration reaches 0.8166. The optimum is an interior point of the grid, not a boundary. The values are point estimates (20 bootstrap resamples, unused); differences between the top configurations (about 0.001-0.004) are too small to read as meaningful.
+- Frozen into `bidrig/detectors/stat_auc.py` as `CHOSEN = ("lit_dep", 0.1)` (43 features: lit and dep groups). A test ties the constant to the selection record.
+- Tests: 69 pass (full suite); black and isort clean. Smoke selection (`--seeds 0-1 --scale 0.15`) ran end to end; its choice (all, 0.01) was a plumbing check and is not used.
+- Validation vs reference (`cd scripts && python run_variant_validation.py --variant stat_auc --tag stat_auc_v1 --seeds 0-9 --n-boot 300`; files `results/variant_stat_auc_v1.{json,md}`, `results/logs/variant_stat_auc_v1.log`):
+  - macro LOMO AUC: stat_auc 0.864 [0.856, 0.871]; full_gbm 0.862 [0.853, 0.871]. Paired difference +0.002 [-0.005, 0.009].
+  - macro precision@10 %: 0.818 [0.797, 0.834] vs 0.810 [0.794, 0.826].
+  - Per scheme, paired difference: rotation +0.011 [0.001, 0.021] (the only CI excluding 0); complementary -0.025 [-0.054, 0.001]; every other scheme's CI includes 0.
+  - False alarms at the calibration threshold: in 0.054 vs 0.051, size 0.085 vs 0.073, spread 0.055 vs 0.053.
+- Result for the hypothesis: NOT falsified. A logistic model on the lit and dep features matches `full_gbm` on validation (paired gap inside the CI), which suggests the boosting step adds little for these features.
+- Caveat (mandatory): the configuration was chosen by validation AUC and the same validation data reports it, so 0.864 is optimistic ("validation-tuned"). The gap to `full_gbm` is selection-affected in this variant's favour. The locked test is the unbiased estimate.
+- Decision: KEEP the code (comparison variant; rule 8 read as fixed in the pre-registration).
+- Side finding: `design_hash` covers every file in `bidrig/detectors/`, so adding `stat_auc.py` changed the hash of `previous` (now 8be1ddcc72085b4d; locked as 90b0cbe63f309f0e). The locked run of `previous` is unaffected (it ran on the earlier source), but a repeat run of `previous` would not be refused by hash. This is the same gap as for `full_gbm`; a name-based guard, or hashing only a variant's own module plus the shared files, would fix it. Not implemented (needs approval).
+- Proposed frozen design for `stat_auc`: hash 6a64930fd6bed238 (`docs/frozen_design_stat_auc.md`). No locked run made.

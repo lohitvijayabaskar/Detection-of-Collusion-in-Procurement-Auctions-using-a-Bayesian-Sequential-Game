@@ -1,0 +1,665 @@
+{
+ "tag": "stat_auc_v1",
+ "variant": "stat_auc",
+ "reference": "full_gbm",
+ "split": "validation",
+ "feature_version": 3,
+ "seeds": "0-9",
+ "n_boot": 300,
+ "scale": 1.0,
+ "results": {
+  "full_gbm::auc[bid_suppression@in]": {
+   "point": 0.78184,
+   "lo": 0.7445569999999999,
+   "hi": 0.818941
+  },
+  "full_gbm::auc[bid_suppression@size]": {
+   "point": 0.7412400000000001,
+   "lo": 0.691788,
+   "hi": 0.789365
+  },
+  "full_gbm::auc[bid_suppression@spread]": {
+   "point": 0.7296,
+   "lo": 0.6755369999999999,
+   "hi": 0.7766689999999999
+  },
+  "full_gbm::auc[bid_suppression]": {
+   "point": 0.7507511111111109,
+   "lo": 0.7219737777777778,
+   "hi": 0.7831567777777777
+  },
+  "full_gbm::auc[complementary@in]": {
+   "point": 0.959,
+   "lo": 0.936417,
+   "hi": 0.975753
+  },
+  "full_gbm::auc[complementary@size]": {
+   "point": 0.95504,
+   "lo": 0.925299,
+   "hi": 0.976897
+  },
+  "full_gbm::auc[complementary@spread]": {
+   "point": 0.9578,
+   "lo": 0.9370970000000001,
+   "hi": 0.9731489999999999
+  },
+  "full_gbm::auc[complementary]": {
+   "point": 0.9569066666666668,
+   "lo": 0.9430759999999999,
+   "hi": 0.9685532222222223
+  },
+  "full_gbm::auc[cover_bidding@in]": {
+   "point": 0.9537199999999999,
+   "lo": 0.93516,
+   "hi": 0.970381
+  },
+  "full_gbm::auc[cover_bidding@size]": {
+   "point": 0.9332,
+   "lo": 0.9024740000000001,
+   "hi": 0.953966
+  },
+  "full_gbm::auc[cover_bidding@spread]": {
+   "point": 0.9472400000000001,
+   "lo": 0.928019,
+   "hi": 0.9655029999999999
+  },
+  "full_gbm::auc[cover_bidding]": {
+   "point": 0.9449022222222222,
+   "lo": 0.9307482222222223,
+   "hi": 0.958004111111111
+  },
+  "full_gbm::auc[intermittent@in]": {
+   "point": 0.8517199999999999,
+   "lo": 0.807721,
+   "hi": 0.8868919999999999
+  },
+  "full_gbm::auc[intermittent@size]": {
+   "point": 0.8546400000000001,
+   "lo": 0.8223400000000001,
+   "hi": 0.8840779999999999
+  },
+  "full_gbm::auc[intermittent@spread]": {
+   "point": 0.8596,
+   "lo": 0.8273309999999999,
+   "hi": 0.8953949999999999
+  },
+  "full_gbm::auc[intermittent]": {
+   "point": 0.8555333333333334,
+   "lo": 0.8343654444444445,
+   "hi": 0.8745568888888889
+  },
+  "full_gbm::auc[noisy_defecting@in]": {
+   "point": 0.81796,
+   "lo": 0.774335,
+   "hi": 0.8596899999999998
+  },
+  "full_gbm::auc[noisy_defecting@size]": {
+   "point": 0.7911599999999999,
+   "lo": 0.7433750000000001,
+   "hi": 0.836392
+  },
+  "full_gbm::auc[noisy_defecting@spread]": {
+   "point": 0.77296,
+   "lo": 0.7276509999999999,
+   "hi": 0.8190139999999999
+  },
+  "full_gbm::auc[noisy_defecting]": {
+   "point": 0.7944622222222223,
+   "lo": 0.7690776666666667,
+   "hi": 0.8181103333333333
+  },
+  "full_gbm::auc[partial_fringe@in]": {
+   "point": 0.6895600000000001,
+   "lo": 0.6218910000000001,
+   "hi": 0.749644
+  },
+  "full_gbm::auc[partial_fringe@size]": {
+   "point": 0.62492,
+   "lo": 0.577322,
+   "hi": 0.6826979999999999
+  },
+  "full_gbm::auc[partial_fringe@spread]": {
+   "point": 0.68672,
+   "lo": 0.6375890000000001,
+   "hi": 0.737694
+  },
+  "full_gbm::auc[partial_fringe]": {
+   "point": 0.6677155555555554,
+   "lo": 0.6399212222222223,
+   "hi": 0.697155
+  },
+  "full_gbm::auc[price_fixing@in]": {
+   "point": 0.9736800000000001,
+   "lo": 0.9574990000000001,
+   "hi": 0.98788
+  },
+  "full_gbm::auc[price_fixing@size]": {
+   "point": 0.9618399999999999,
+   "lo": 0.9401689999999999,
+   "hi": 0.9815319999999998
+  },
+  "full_gbm::auc[price_fixing@spread]": {
+   "point": 0.9784799999999999,
+   "lo": 0.961566,
+   "hi": 0.9904820000000001
+  },
+  "full_gbm::auc[price_fixing]": {
+   "point": 0.972271111111111,
+   "lo": 0.961731111111111,
+   "hi": 0.9815784444444444
+  },
+  "full_gbm::auc[rotation@in]": {
+   "point": 0.95448,
+   "lo": 0.931173,
+   "hi": 0.9727239999999999
+  },
+  "full_gbm::auc[rotation@size]": {
+   "point": 0.9405199999999999,
+   "lo": 0.9160639999999999,
+   "hi": 0.963349
+  },
+  "full_gbm::auc[rotation@spread]": {
+   "point": 0.9594799999999999,
+   "lo": 0.934186,
+   "hi": 0.9795719999999999
+  },
+  "full_gbm::auc[rotation]": {
+   "point": 0.9510977777777778,
+   "lo": 0.9323328888888889,
+   "hi": 0.9655174444444444
+  },
+  "full_gbm::fa[honest@in]": {
+   "point": 0.05100000000000001,
+   "lo": 0.034,
+   "hi": 0.06700000000000002
+  },
+  "full_gbm::fa[honest@size]": {
+   "point": 0.07300000000000001,
+   "lo": 0.048,
+   "hi": 0.10400000000000001
+  },
+  "full_gbm::fa[honest@spread]": {
+   "point": 0.053000000000000005,
+   "lo": 0.034,
+   "hi": 0.07452499999999998
+  },
+  "full_gbm::fa_lomo_max[honest@in]": {
+   "point": 0.069,
+   "lo": 0.05500000000000001,
+   "hi": 0.09252499999999998
+  },
+  "full_gbm::fa_lomo_max[honest@size]": {
+   "point": 0.099,
+   "lo": 0.08,
+   "hi": 0.13452499999999998
+  },
+  "full_gbm::fa_lomo_max[honest@spread]": {
+   "point": 0.08,
+   "lo": 0.06695000000000002,
+   "hi": 0.106525
+  },
+  "full_gbm::macro_auc": {
+   "point": 0.8617049999999999,
+   "lo": 0.8533564861111111,
+   "hi": 0.8705494583333333
+  },
+  "full_gbm::macro_prec10": {
+   "point": 0.8095394736842105,
+   "lo": 0.7938898026315789,
+   "hi": 0.8258305921052631
+  },
+  "full_gbm::prec10[bid_suppression]": {
+   "point": 0.5763157894736843,
+   "lo": 0.5263157894736842,
+   "hi": 0.6382236842105262
+  },
+  "full_gbm::prec10[complementary]": {
+   "point": 0.9921052631578948,
+   "lo": 0.9749342105263157,
+   "hi": 1.0
+  },
+  "full_gbm::prec10[cover_bidding]": {
+   "point": 0.963157894736842,
+   "lo": 0.9394736842105263,
+   "hi": 0.9842105263157894
+  },
+  "full_gbm::prec10[intermittent]": {
+   "point": 0.8342105263157894,
+   "lo": 0.7894736842105263,
+   "hi": 0.8855921052631579
+  },
+  "full_gbm::prec10[noisy_defecting]": {
+   "point": 0.7052631578947368,
+   "lo": 0.6421052631578947,
+   "hi": 0.7500000000000001
+  },
+  "full_gbm::prec10[partial_fringe]": {
+   "point": 0.42631578947368415,
+   "lo": 0.3657894736842105,
+   "hi": 0.4882236842105262
+  },
+  "full_gbm::prec10[price_fixing]": {
+   "point": 0.9973684210526315,
+   "lo": 0.9894736842105264,
+   "hi": 1.0
+  },
+  "full_gbm::prec10[rotation]": {
+   "point": 0.9815789473684209,
+   "lo": 0.9512499999999999,
+   "hi": 0.9973684210526315
+  },
+  "full_gbm::tpr[bid_suppression]": {
+   "point": 0.29333333333333333,
+   "lo": 0.24933333333333332,
+   "hi": 0.3487
+  },
+  "full_gbm::tpr[complementary]": {
+   "point": 0.8573333333333334,
+   "lo": 0.8186666666666667,
+   "hi": 0.8900333333333335
+  },
+  "full_gbm::tpr[cover_bidding]": {
+   "point": 0.7693333333333332,
+   "lo": 0.7139666666666666,
+   "hi": 0.8180333333333333
+  },
+  "full_gbm::tpr[intermittent]": {
+   "point": 0.5626666666666666,
+   "lo": 0.5246333333333333,
+   "hi": 0.6060333333333333
+  },
+  "full_gbm::tpr[noisy_defecting]": {
+   "point": 0.4373333333333333,
+   "lo": 0.39263333333333333,
+   "hi": 0.4774
+  },
+  "full_gbm::tpr[partial_fringe]": {
+   "point": 0.21333333333333337,
+   "lo": 0.16933333333333334,
+   "hi": 0.25733333333333336
+  },
+  "full_gbm::tpr[price_fixing]": {
+   "point": 0.9000000000000001,
+   "lo": 0.8699666666666667,
+   "hi": 0.9319999999999998
+  },
+  "full_gbm::tpr[rotation]": {
+   "point": 0.82,
+   "lo": 0.76,
+   "hi": 0.8727
+  },
+  "stat_auc-full_gbm::auc[bid_suppression]": {
+   "point": 0.0010133333333335326,
+   "lo": -0.02543088888888897,
+   "hi": 0.023561333333333323
+  },
+  "stat_auc-full_gbm::auc[complementary]": {
+   "point": -0.024515555555555624,
+   "lo": -0.05355877777777766,
+   "hi": 0.0014743333333332683
+  },
+  "stat_auc-full_gbm::auc[cover_bidding]": {
+   "point": 0.0010666666666667712,
+   "lo": -0.007522444444444361,
+   "hi": 0.01011566666666669
+  },
+  "stat_auc-full_gbm::auc[intermittent]": {
+   "point": 0.010279999999999956,
+   "lo": -0.005871777777777686,
+   "hi": 0.02418633333333329
+  },
+  "stat_auc-full_gbm::auc[noisy_defecting]": {
+   "point": 0.01445777777777768,
+   "lo": -0.007274555555555491,
+   "hi": 0.03594533333333337
+  },
+  "stat_auc-full_gbm::auc[partial_fringe]": {
+   "point": 0.005133333333333545,
+   "lo": -0.023030555555555474,
+   "hi": 0.023894555555555547
+  },
+  "stat_auc-full_gbm::auc[price_fixing]": {
+   "point": -0.0004933333333331236,
+   "lo": -0.007682444444444469,
+   "hi": 0.005909000000000023
+  },
+  "stat_auc-full_gbm::auc[rotation]": {
+   "point": 0.010626666666666673,
+   "lo": 0.0010451111111111615,
+   "hi": 0.021100111111111083
+  },
+  "stat_auc-full_gbm::macro_auc": {
+   "point": 0.0021961111111111764,
+   "lo": -0.005205138888888888,
+   "hi": 0.009422430555555484
+  },
+  "stat_auc::auc[bid_suppression@in]": {
+   "point": 0.76016,
+   "lo": 0.708068,
+   "hi": 0.808164
+  },
+  "stat_auc::auc[bid_suppression@size]": {
+   "point": 0.73308,
+   "lo": 0.6728620000000001,
+   "hi": 0.792568
+  },
+  "stat_auc::auc[bid_suppression@spread]": {
+   "point": 0.7611199999999999,
+   "lo": 0.716506,
+   "hi": 0.8131929999999998
+  },
+  "stat_auc::auc[bid_suppression]": {
+   "point": 0.7517644444444445,
+   "lo": 0.7166235555555556,
+   "hi": 0.7915465555555555
+  },
+  "stat_auc::auc[complementary@in]": {
+   "point": 0.9069600000000001,
+   "lo": 0.8604180000000001,
+   "hi": 0.9452330000000001
+  },
+  "stat_auc::auc[complementary@size]": {
+   "point": 0.9508000000000001,
+   "lo": 0.9239870000000001,
+   "hi": 0.973475
+  },
+  "stat_auc::auc[complementary@spread]": {
+   "point": 0.9392399999999999,
+   "lo": 0.893847,
+   "hi": 0.970433
+  },
+  "stat_auc::auc[complementary]": {
+   "point": 0.9323911111111112,
+   "lo": 0.9012641111111112,
+   "hi": 0.9547106666666667
+  },
+  "stat_auc::auc[cover_bidding@in]": {
+   "point": 0.94912,
+   "lo": 0.9283540000000001,
+   "hi": 0.969648
+  },
+  "stat_auc::auc[cover_bidding@size]": {
+   "point": 0.9394399999999999,
+   "lo": 0.912415,
+   "hi": 0.9610879999999999
+  },
+  "stat_auc::auc[cover_bidding@spread]": {
+   "point": 0.9513200000000002,
+   "lo": 0.929903,
+   "hi": 0.9709189999999999
+  },
+  "stat_auc::auc[cover_bidding]": {
+   "point": 0.945968888888889,
+   "lo": 0.9345666666666665,
+   "hi": 0.9584303333333334
+  },
+  "stat_auc::auc[intermittent@in]": {
+   "point": 0.8750399999999999,
+   "lo": 0.8388059999999999,
+   "hi": 0.9079010000000001
+  },
+  "stat_auc::auc[intermittent@size]": {
+   "point": 0.85688,
+   "lo": 0.81589,
+   "hi": 0.890763
+  },
+  "stat_auc::auc[intermittent@spread]": {
+   "point": 0.86676,
+   "lo": 0.8252670000000001,
+   "hi": 0.9075989999999998
+  },
+  "stat_auc::auc[intermittent]": {
+   "point": 0.8658133333333333,
+   "lo": 0.8386416666666667,
+   "hi": 0.8853663333333334
+  },
+  "stat_auc::auc[noisy_defecting@in]": {
+   "point": 0.8164399999999998,
+   "lo": 0.781709,
+   "hi": 0.8584959999999999
+  },
+  "stat_auc::auc[noisy_defecting@size]": {
+   "point": 0.8075199999999999,
+   "lo": 0.7702,
+   "hi": 0.849824
+  },
+  "stat_auc::auc[noisy_defecting@spread]": {
+   "point": 0.80456,
+   "lo": 0.7625200000000001,
+   "hi": 0.840962
+  },
+  "stat_auc::auc[noisy_defecting]": {
+   "point": 0.80892,
+   "lo": 0.7822323333333333,
+   "hi": 0.8337203333333333
+  },
+  "stat_auc::auc[partial_fringe@in]": {
+   "point": 0.68932,
+   "lo": 0.6148829999999998,
+   "hi": 0.7530539999999999
+  },
+  "stat_auc::auc[partial_fringe@size]": {
+   "point": 0.63756,
+   "lo": 0.5913370000000001,
+   "hi": 0.685902
+  },
+  "stat_auc::auc[partial_fringe@spread]": {
+   "point": 0.6899200000000001,
+   "lo": 0.635516,
+   "hi": 0.736012
+  },
+  "stat_auc::auc[partial_fringe]": {
+   "point": 0.6728488888888889,
+   "lo": 0.6381865555555556,
+   "hi": 0.7022326666666666
+  },
+  "stat_auc::auc[price_fixing@in]": {
+   "point": 0.9718399999999999,
+   "lo": 0.953731,
+   "hi": 0.987098
+  },
+  "stat_auc::auc[price_fixing@size]": {
+   "point": 0.9591999999999998,
+   "lo": 0.9338300000000002,
+   "hi": 0.978122
+  },
+  "stat_auc::auc[price_fixing@spread]": {
+   "point": 0.98148,
+   "lo": 0.9662970000000001,
+   "hi": 0.9920819999999999
+  },
+  "stat_auc::auc[price_fixing]": {
+   "point": 0.9717777777777779,
+   "lo": 0.9623654444444445,
+   "hi": 0.980586
+  },
+  "stat_auc::auc[rotation@in]": {
+   "point": 0.9616800000000001,
+   "lo": 0.9420549999999999,
+   "hi": 0.976957
+  },
+  "stat_auc::auc[rotation@size]": {
+   "point": 0.95604,
+   "lo": 0.931371,
+   "hi": 0.974392
+  },
+  "stat_auc::auc[rotation@spread]": {
+   "point": 0.96692,
+   "lo": 0.95072,
+   "hi": 0.9808420000000001
+  },
+  "stat_auc::auc[rotation]": {
+   "point": 0.9617244444444445,
+   "lo": 0.949605888888889,
+   "hi": 0.9718155555555555
+  },
+  "stat_auc::fa[honest@in]": {
+   "point": 0.054000000000000006,
+   "lo": 0.033475000000000005,
+   "hi": 0.07799999999999999
+  },
+  "stat_auc::fa[honest@size]": {
+   "point": 0.08499999999999999,
+   "lo": 0.059000000000000004,
+   "hi": 0.109525
+  },
+  "stat_auc::fa[honest@spread]": {
+   "point": 0.05500000000000001,
+   "lo": 0.038,
+   "hi": 0.07252499999999998
+  },
+  "stat_auc::fa_lomo_max[honest@in]": {
+   "point": 0.068,
+   "lo": 0.05047500000000001,
+   "hi": 0.09152499999999998
+  },
+  "stat_auc::fa_lomo_max[honest@size]": {
+   "point": 0.098,
+   "lo": 0.07647500000000002,
+   "hi": 0.125525
+  },
+  "stat_auc::fa_lomo_max[honest@spread]": {
+   "point": 0.06500000000000002,
+   "lo": 0.052000000000000005,
+   "hi": 0.088
+  },
+  "stat_auc::macro_auc": {
+   "point": 0.8639011111111111,
+   "lo": 0.8560646666666667,
+   "hi": 0.8711142083333333
+  },
+  "stat_auc::macro_prec10": {
+   "point": 0.817763157894737,
+   "lo": 0.7973684210526315,
+   "hi": 0.8337253289473684
+  },
+  "stat_auc::prec10[bid_suppression]": {
+   "point": 0.623684210526316,
+   "lo": 0.5407236842105263,
+   "hi": 0.6934868421052631
+  },
+  "stat_auc::prec10[complementary]": {
+   "point": 0.9973684210526315,
+   "lo": 0.9842105263157895,
+   "hi": 1.0
+  },
+  "stat_auc::prec10[cover_bidding]": {
+   "point": 0.9789473684210528,
+   "lo": 0.9526315789473683,
+   "hi": 0.9921052631578947
+  },
+  "stat_auc::prec10[intermittent]": {
+   "point": 0.8421052631578947,
+   "lo": 0.80125,
+   "hi": 0.8922368421052631
+  },
+  "stat_auc::prec10[noisy_defecting]": {
+   "point": 0.6736842105263159,
+   "lo": 0.6038815789473685,
+   "hi": 0.7394736842105264
+  },
+  "stat_auc::prec10[partial_fringe]": {
+   "point": 0.4342105263157895,
+   "lo": 0.3789473684210526,
+   "hi": 0.4789473684210526
+  },
+  "stat_auc::prec10[price_fixing]": {
+   "point": 1.0,
+   "lo": 0.9947368421052631,
+   "hi": 1.0
+  },
+  "stat_auc::prec10[rotation]": {
+   "point": 0.9921052631578948,
+   "lo": 0.9815789473684211,
+   "hi": 1.0
+  },
+  "stat_auc::tpr[bid_suppression]": {
+   "point": 0.3306666666666667,
+   "lo": 0.2706666666666667,
+   "hi": 0.38749999999999984
+  },
+  "stat_auc::tpr[complementary]": {
+   "point": 0.8493333333333333,
+   "lo": 0.8059666666666666,
+   "hi": 0.8786666666666667
+  },
+  "stat_auc::tpr[cover_bidding]": {
+   "point": 0.7826666666666667,
+   "lo": 0.7326333333333332,
+   "hi": 0.8313666666666667
+  },
+  "stat_auc::tpr[intermittent]": {
+   "point": 0.5973333333333333,
+   "lo": 0.5506666666666666,
+   "hi": 0.64
+  },
+  "stat_auc::tpr[noisy_defecting]": {
+   "point": 0.40266666666666673,
+   "lo": 0.3353,
+   "hi": 0.4620333333333333
+  },
+  "stat_auc::tpr[partial_fringe]": {
+   "point": 0.19466666666666665,
+   "lo": 0.1579666666666667,
+   "hi": 0.23466666666666666
+  },
+  "stat_auc::tpr[price_fixing]": {
+   "point": 0.9093333333333332,
+   "lo": 0.876,
+   "hi": 0.9333333333333333
+  },
+  "stat_auc::tpr[rotation]": {
+   "point": 0.8466666666666667,
+   "lo": 0.7953,
+   "hi": 0.8900333333333332
+  },
+  "stat_auc::base_rate[bid_suppression]": {
+   "point": 0.2
+  },
+  "stat_auc::base_rate[complementary]": {
+   "point": 0.2
+  },
+  "stat_auc::base_rate[cover_bidding]": {
+   "point": 0.2
+  },
+  "stat_auc::base_rate[intermittent]": {
+   "point": 0.2
+  },
+  "stat_auc::base_rate[noisy_defecting]": {
+   "point": 0.2
+  },
+  "stat_auc::base_rate[partial_fringe]": {
+   "point": 0.2
+  },
+  "stat_auc::base_rate[price_fixing]": {
+   "point": 0.2
+  },
+  "stat_auc::base_rate[rotation]": {
+   "point": 0.2
+  },
+  "full_gbm::base_rate[bid_suppression]": {
+   "point": 0.2
+  },
+  "full_gbm::base_rate[complementary]": {
+   "point": 0.2
+  },
+  "full_gbm::base_rate[cover_bidding]": {
+   "point": 0.2
+  },
+  "full_gbm::base_rate[intermittent]": {
+   "point": 0.2
+  },
+  "full_gbm::base_rate[noisy_defecting]": {
+   "point": 0.2
+  },
+  "full_gbm::base_rate[partial_fringe]": {
+   "point": 0.2
+  },
+  "full_gbm::base_rate[price_fixing]": {
+   "point": 0.2
+  },
+  "full_gbm::base_rate[rotation]": {
+   "point": 0.2
+  }
+ }
+}

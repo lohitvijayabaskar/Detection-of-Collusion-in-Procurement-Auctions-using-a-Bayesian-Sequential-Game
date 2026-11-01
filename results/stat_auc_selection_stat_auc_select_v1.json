@@ -1,0 +1,31 @@
+{
+ "tag": "stat_auc_select_v1",
+ "split": "validation",
+ "feature_version": 3,
+ "seeds": "0-9",
+ "scale": 1.0,
+ "macro_auc": {
+  "stat_auc:dep:0.01": 0.7986605555555555,
+  "stat_auc:dep:0.1": 0.8120872222222223,
+  "stat_auc:dep:1": 0.816565,
+  "stat_auc:dep:10": 0.8165383333333334,
+  "stat_auc:lit_dep:0.01": 0.8620533333333333,
+  "stat_auc:lit_dep:0.1": 0.8639011111111111,
+  "stat_auc:lit_dep:1": 0.8600788888888888,
+  "stat_auc:lit_dep:10": 0.855885,
+  "stat_auc:lit_dep_seq:0.01": 0.8607238888888888,
+  "stat_auc:lit_dep_seq:0.1": 0.8625905555555555,
+  "stat_auc:lit_dep_seq:1": 0.8585477777777778,
+  "stat_auc:lit_dep_seq:10": 0.8538994444444443,
+  "stat_auc:all:0.01": 0.8576916666666666,
+  "stat_auc:all:0.1": 0.8595172222222223,
+  "stat_auc:all:1": 0.8552738888888889,
+  "stat_auc:all:10": 0.8510122222222221
+ },
+ "chosen": {
+  "subset": "lit_dep",
+  "C": 0.1,
+  "name": "stat_auc:lit_dep:0.1",
+  "macro_auc": 0.8639011111111111
+ }
+}
