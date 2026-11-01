@@ -26,8 +26,9 @@ from pathlib import Path
 
 import numpy as np
 
+# Folder with the extracted CSV files. Set BIDRIG_REAL_DATA to point elsewhere.
 REAL_DATA_DIR = Path(
-    os.environ.get("BIDRIG_REAL_DATA", r"C:/Users/Lohit Vijayabaskar/real_data/rodriguez2022/data")
+    os.environ.get("BIDRIG_REAL_DATA", Path(__file__).resolve().parent.parent / "data" / "real")
 )
 
 PTE = "Pre-Tender Estimate (PTE)"

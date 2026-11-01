@@ -5,8 +5,8 @@ description = "Bid-rigging detection benchmark: simulator, collusion library, de
 requires-python = ">=3.10"
 dependencies = ["numpy>=1.26", "scipy>=1.11", "scikit-learn>=1.4"]
 
-[tool.setuptools]
-packages = ["bidrig"]
+[tool.setuptools.packages.find]
+include = ["bidrig*"]
 
 [tool.black]
 line-length = 100

@@ -11,7 +11,8 @@ import time
 from _common import RESULTS, parse_seeds
 
 from bidrig.datasets import FEATURE_VERSION
-from bidrig.models import BASELINES, DESIGNS
+from bidrig.detectors import BASELINES
+from bidrig.detectors.gbm_groups import DESIGNS
 from bidrig.protocol import criteria, evaluate, score_split
 from bidrig.report import comparison_table, design_table
 

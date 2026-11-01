@@ -177,7 +177,7 @@ def _cols(names, wanted):
 
 def fit_score(design: str, train: dict, test: dict):
     """Fit on the training table, return (test scores, threshold from OOF honest scores)."""
-    from bidrig.models import GBM_PARAMS
+    from bidrig.detectors.config import GBM_PARAMS
 
     X, y = train["X"], train["y"]
     if design.startswith("single:"):

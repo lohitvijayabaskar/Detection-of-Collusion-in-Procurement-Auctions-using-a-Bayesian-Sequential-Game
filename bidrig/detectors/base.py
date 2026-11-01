@@ -14,8 +14,8 @@ from typing import Callable, Protocol, Sequence
 import numpy as np
 from sklearn.ensemble import HistGradientBoostingClassifier
 
+from bidrig.detectors.config import GBM_PARAMS
 from bidrig.features import ALL_FEATURES
-from bidrig.models import GBM_PARAMS
 
 
 class Detector(Protocol):
@@ -40,13 +40,22 @@ class GBMOn:
 
     name = "gbm_on"
 
-    def __init__(self, features: Sequence[str], names: Sequence[str] = ALL_FEATURES):
+    def __init__(
+        self,
+        features: Sequence[str],
+        names: Sequence[str] = ALL_FEATURES,
+        monotone: dict | None = None,
+    ):
         self.features = tuple(features)
+        self.monotone = monotone  # feature -> +1 / -1 constraint (knowledge prior), or None
         self._cols = column_index(names, self.features)
         self.model: HistGradientBoostingClassifier | None = None
 
     def fit(self, X: np.ndarray, y: np.ndarray) -> "GBMOn":
-        self.model = HistGradientBoostingClassifier(**GBM_PARAMS)
+        params = dict(GBM_PARAMS)
+        if self.monotone:
+            params["monotonic_cst"] = [self.monotone.get(f, 0) for f in self.features]
+        self.model = HistGradientBoostingClassifier(**params)
         self.model.fit(X[:, self._cols], y)
         return self
 

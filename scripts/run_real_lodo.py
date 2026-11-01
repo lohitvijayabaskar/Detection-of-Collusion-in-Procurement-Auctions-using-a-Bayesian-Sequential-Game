@@ -2,8 +2,8 @@
 
 python scripts/run_real_lodo.py --note "approved by user on <date>"
 
-The design hash covers bidrig/realeval.py, bidrig/realdata.py, bidrig/features.py,
-bidrig/metrics.py and the GBM parameters. A second run with the same hash is refused.
+The design hash covers bidrig/realeval.py, bidrig/realdata.py, bidrig/metrics.py, every file
+under bidrig/features/ and the GBM parameters. A second run with the same hash is refused.
 Every run is appended to results/real_runs.jsonl; tables go to results/real_lodo_<n>.md.
 """
 
@@ -15,19 +15,20 @@ import time
 
 from _common import RESULTS, ROOT
 
-from bidrig.models import GBM_PARAMS
+from bidrig.detectors.config import GBM_PARAMS
 from bidrig.realdata import load
 from bidrig.realeval import DESIGNS, SINGLE, dataset_table, lodo
 
 LOG = RESULTS / "real_runs.jsonl"
 DATASETS_USED = ("brazil", "italy", "japan")
-HASHED = ("realeval.py", "realdata.py", "features.py", "metrics.py")
+HASHED = ("realeval.py", "realdata.py", "metrics.py")
 
 
 def design_hash() -> str:
     h = hashlib.sha256(json.dumps([GBM_PARAMS, DATASETS_USED]).encode())
-    for name in HASHED:
-        h.update((ROOT / "bidrig" / name).read_bytes())
+    package = ROOT / "bidrig"
+    for path in [package / n for n in HASHED] + sorted((package / "features").glob("*.py")):
+        h.update(path.read_bytes())
     return h.hexdigest()[:16]
 
 

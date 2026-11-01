@@ -3,7 +3,7 @@
 python scripts/run_locked_test.py --design full_gbm --note "frozen after validation v3"
 
 The frozen design is identified by a hash of its name, feature groups, GBM parameters,
-feature version and the bidrig source files (including bidrig/detectors/). A second run with
+feature version and every source file under bidrig/ (subpackages included). A second run with
 the same hash is refused,
 so the test split cannot be used for tuning. Every run is appended to
 results/locked_runs.jsonl and its tables are written to results/locked_<n>_<design>.md.
@@ -18,15 +18,11 @@ import time
 from _common import RESULTS, ROOT, parse_seeds
 
 from bidrig.datasets import FEATURE_VERSION
-from bidrig.models import (
-    BASELINES,
-    DESIGNS,
-    FUSED,
-    GBM_PARAMS,
-    MONOTONE,
-    TAIL_DIRECTIONS,
-    TAIL_MARGIN,
-)
+from bidrig.detectors import BASELINES
+from bidrig.detectors.config import GBM_PARAMS
+from bidrig.detectors.gbm_groups import DESIGNS, MONOTONE
+from bidrig.detectors.priors import TAIL_DIRECTIONS, TAIL_MARGIN
+from bidrig.detectors.tail_fused import FUSED
 from bidrig.protocol import criteria, evaluate, score_split
 from bidrig.report import comparison_table, design_table
 
@@ -49,8 +45,7 @@ def design_hash(design: str) -> str:
             ]
         ).encode()
     )
-    package = ROOT / "bidrig"
-    for p in sorted(package.glob("*.py")) + sorted((package / "detectors").glob("*.py")):
+    for p in sorted((ROOT / "bidrig").rglob("*.py")):  # the whole package, subfolders included
         h.update(p.read_bytes())
     return h.hexdigest()[:16]
 

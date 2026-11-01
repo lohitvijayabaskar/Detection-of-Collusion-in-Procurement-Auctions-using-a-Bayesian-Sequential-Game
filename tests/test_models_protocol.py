@@ -88,7 +88,7 @@ def test_same_seed_identical_across_processes():
 
 
 def test_tail_and_fused_scores():
-    from bidrig.models import Fused, TailScore, _upper_pvalue
+    from bidrig.detectors.tail_fused import Fused, TailScore, _upper_pvalue
 
     rng = np.random.default_rng(0)
     X = rng.normal(size=(400, len(ALL_FEATURES)))
