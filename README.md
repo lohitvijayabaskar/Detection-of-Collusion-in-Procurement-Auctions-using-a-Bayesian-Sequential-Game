@@ -4,12 +4,21 @@ A simulator of repeated first-price procurement tenders with persistent bidders,
 imposed collusion mechanisms, market-level detectors, and a locked evaluation protocol
 (leave-one-mechanism-out, held-out market sizes and cost spreads, 10 seeds, bootstrap CIs).
 
-Status: one locked test run (2026-10-21). Three of the four pre-registered criteria are met;
-C1 (every held-out mechanism at AUC ≥ 0.85) is not. By the project's own criteria this is
-not publication-ready. See `docs/experiment_log.md` for every run and
-`docs/claims_table.md` for what is supported.
+Status (2026-11-01): three locked test runs, one per frozen detector. For each, three of the
+four pre-registered criteria are met; C1 (every held-out mechanism at AUC ≥ 0.85) is not. By
+the project's own criteria this is not publication-ready. See `docs/experiment_log.md` for every
+run and `docs/claims_table.md` for what is supported.
 
-## Locked result (run 1, design full_gbm, seeds 0-9, 95 % bootstrap CIs)
+| detector (locked run) | macro LOMO AUC [95 % CI] | macro precision@10 % | C1 | C2 | C3 | C4 |
+|---|---|---|---|---|---|---|
+| `full_gbm` (run 1) | 0.870 [0.862, 0.878] | 0.766 | no | yes | yes | yes |
+| `previous` (run 2): without the within-firm null | 0.856 [0.846, 0.866] | 0.738 | no | yes | yes | yes |
+| `stat_auc` (run 3): validation-tuned logistic model | 0.862 [0.854, 0.869] | 0.805 | no | yes | yes | yes |
+
+A fourth variant, `rl_screens` (screen-subset selection by a bandit), is built and being
+validated; it has no locked run yet. Code layout and how to add a detector: `CLAUDE.md`.
+
+## Locked result for `full_gbm` (run 1, seeds 0-9, 95 % bootstrap CIs)
 
 | criterion | result | met |
 |---|---|---|
