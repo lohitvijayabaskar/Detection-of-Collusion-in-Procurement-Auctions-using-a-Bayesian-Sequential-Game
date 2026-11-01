@@ -189,4 +189,8 @@ def make_design(name: str):
         return Fused(FUSED[name])
     if name in MONOTONE:
         return GBM(MONOTONE[name], monotone=dict(TAIL_DIRECTIONS))
-    return GBM(DESIGNS[name])
+    if name in DESIGNS:
+        return GBM(DESIGNS[name])
+    from bidrig.detectors import make  # lazy: detectors import this module
+
+    return make(name)

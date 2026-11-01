@@ -171,3 +171,20 @@ Prototypes use 150 fresh markets per mechanism (seed 78, split label "proto"; ha
 - Pair features alone (real_pair_gbm): 0.679 / 0.630 / 0.685 (Italy / Japan / Brazil). Adding them to the screens helps where repeated bidders exist (Italy, the only dataset with repeated markets in D2) and not elsewhere.
 - Single CV screen: 0.630 / 0.739 / 0.873. A single screen beats every learned model on Japan and Brazil, so the learned models do not transfer across countries better than the simplest screen.
 - No further real-data runs under this hash. Any change needs a new proposal and the user's approval.
+
+## 2026-11-01 VAR-1: variant `previous` (full_gbm minus the within-firm null columns `_t`), validation
+
+- Goal and hypothesis: `previous` = same model and feature groups as full_gbm with every column ending in `_t` removed. Hypothesis: the second null is what raised validation AUC in I1, so removing it should lower the result. Falsifier: the paired difference to full_gbm lies inside its CI.
+- Change: new package `bidrig/detectors/` (`base.py` interface, registry and `GBMOn`; `previous.py`; `__init__.py`), a lazy registry lookup at the end of `models.make_design` (built-in names resolve first, so existing designs are unchanged), `tests/test_detectors.py` (9 tests), `scripts/run_variant_validation.py` (variant vs reference on the validation split only; `protocol.py` and `metrics.py` untouched).
+- Tests: 57 pass (full suite), black and isort clean. Smoke (`--seeds 0-1 --scale 0.15 --n-boot 30`): previous 0.771 vs full_gbm 0.789, paired -0.018 [-0.042, 0.004]; too small to conclude.
+- Command: `cd scripts && python run_variant_validation.py --variant previous --tag previous_v1 --seeds 0-9 --n-boot 300`. Files: `results/variant_previous_v1.{json,md}`, `results/logs/variant_previous_v1.log`. Feature version 3, cached tables.
+- Outcome (validation, 10 seeds, 95 % CIs):
+  - macro LOMO AUC: previous 0.848 [0.839, 0.855]; full_gbm 0.862 [0.853, 0.871]. Paired difference (previous - full_gbm) -0.014 [-0.019, -0.008]; the CI excludes 0.
+  - macro precision@10 %: previous 0.788 [0.764, 0.805]; full_gbm 0.810 [0.794, 0.826].
+  - Per scheme, paired differences with CIs excluding 0 (previous lower): complementary -0.021, price_fixing -0.019, partial_fringe -0.021, intermittent -0.015. CIs including 0: bid_suppression, cover_bidding, noisy_defecting, rotation. No scheme improved.
+  - False alarms at the calibration threshold are indistinguishable: in 0.049 vs 0.051, size 0.075 vs 0.073, spread 0.051 vs 0.053.
+- Result for the hypothesis: NOT falsified. The second null contributes, but the effect on the full model is small (about 0.014 macro AUC). The earlier large I1 gain (0.771 to 0.826) was for the dependence-only model; the full model already carried most of that signal through the literature screens.
+- Correction to the stated expectation: the brief said removing the second null should give "about 0.77". That figure is the dependence-only model. For the full model the expected value is the v1 result (0.847), and the measured 0.848 matches it.
+- Decision: the code is KEPT. Rule 8 (keep only a change that improves on the reference) does not fit an ablation variant whose job is to be compared with the reference; read literally it would revert `previous` because it is worse. The user should confirm this reading.
+- Open point for freezing: `scripts/run_locked_test.py` hashes `bidrig/*.py` only, so edits to `bidrig/detectors/*.py` would not change a frozen design's hash. Before any locked run, the hash should include `bidrig/detectors/*.py` (an edit to the locked-run script, so it needs the user's approval).
+- No locked run was made. Next: user approval to freeze `previous` (after the hash fix), then one locked run.

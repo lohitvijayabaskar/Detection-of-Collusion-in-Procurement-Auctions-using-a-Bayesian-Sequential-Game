@@ -1,0 +1,665 @@
+{
+ "tag": "smoke_previous",
+ "variant": "previous",
+ "reference": "full_gbm",
+ "split": "validation",
+ "feature_version": 3,
+ "seeds": "0-1",
+ "n_boot": 30,
+ "scale": 0.15,
+ "results": {
+  "full_gbm::auc[bid_suppression@in]": {
+   "point": 0.8916666666666666,
+   "lo": 0.7870833333333334,
+   "hi": 1.0
+  },
+  "full_gbm::auc[bid_suppression@size]": {
+   "point": 0.65,
+   "lo": 0.44312500000000005,
+   "hi": 0.8666666666666667
+  },
+  "full_gbm::auc[bid_suppression@spread]": {
+   "point": 0.7250000000000001,
+   "lo": 0.36208333333333337,
+   "hi": 0.9062499999999999
+  },
+  "full_gbm::auc[bid_suppression]": {
+   "point": 0.750925925925926,
+   "lo": 0.6572222222222223,
+   "hi": 0.8324537037037036
+  },
+  "full_gbm::auc[complementary@in]": {
+   "point": 0.9416666666666667,
+   "lo": 0.8589583333333334,
+   "hi": 0.9833333333333334
+  },
+  "full_gbm::auc[complementary@size]": {
+   "point": 0.8083333333333333,
+   "lo": 0.6210416666666667,
+   "hi": 0.9568749999999999
+  },
+  "full_gbm::auc[complementary@spread]": {
+   "point": 0.7916666666666667,
+   "lo": 0.4650000000000001,
+   "hi": 1.0
+  },
+  "full_gbm::auc[complementary]": {
+   "point": 0.8500000000000001,
+   "lo": 0.7004166666666667,
+   "hi": 0.9700925925925926
+  },
+  "full_gbm::auc[cover_bidding@in]": {
+   "point": 0.925,
+   "lo": 0.864375,
+   "hi": 1.0
+  },
+  "full_gbm::auc[cover_bidding@size]": {
+   "point": 0.8416666666666667,
+   "lo": 0.6891666666666667,
+   "hi": 0.9516666666666665
+  },
+  "full_gbm::auc[cover_bidding@spread]": {
+   "point": 0.9333333333333333,
+   "lo": 0.7825,
+   "hi": 1.0
+  },
+  "full_gbm::auc[cover_bidding]": {
+   "point": 0.9074074074074074,
+   "lo": 0.8515972222222222,
+   "hi": 0.9619907407407408
+  },
+  "full_gbm::auc[intermittent@in]": {
+   "point": 0.95,
+   "lo": 0.9097916666666667,
+   "hi": 1.0
+  },
+  "full_gbm::auc[intermittent@size]": {
+   "point": 0.7833333333333334,
+   "lo": 0.593125,
+   "hi": 0.91375
+  },
+  "full_gbm::auc[intermittent@spread]": {
+   "point": 0.7583333333333333,
+   "lo": 0.5491666666666667,
+   "hi": 0.9045833333333333
+  },
+  "full_gbm::auc[intermittent]": {
+   "point": 0.8388888888888889,
+   "lo": 0.7696527777777779,
+   "hi": 0.9054398148148148
+  },
+  "full_gbm::auc[noisy_defecting@in]": {
+   "point": 0.6583333333333333,
+   "lo": 0.3770833333333334,
+   "hi": 0.9327083333333333
+  },
+  "full_gbm::auc[noisy_defecting@size]": {
+   "point": 0.6833333333333333,
+   "lo": 0.48833333333333334,
+   "hi": 0.8925
+  },
+  "full_gbm::auc[noisy_defecting@spread]": {
+   "point": 0.7333333333333334,
+   "lo": 0.5097916666666666,
+   "hi": 0.8962499999999999
+  },
+  "full_gbm::auc[noisy_defecting]": {
+   "point": 0.6944444444444444,
+   "lo": 0.5708333333333333,
+   "hi": 0.7746990740740741
+  },
+  "full_gbm::auc[partial_fringe@in]": {
+   "point": 0.675,
+   "lo": 0.47104166666666675,
+   "hi": 0.8485416666666666
+  },
+  "full_gbm::auc[partial_fringe@size]": {
+   "point": 0.42500000000000004,
+   "lo": 0.18708333333333332,
+   "hi": 0.7318749999999999
+  },
+  "full_gbm::auc[partial_fringe@spread]": {
+   "point": 0.6416666666666666,
+   "lo": 0.3741666666666667,
+   "hi": 0.8841666666666667
+  },
+  "full_gbm::auc[partial_fringe]": {
+   "point": 0.5555555555555556,
+   "lo": 0.35826388888888894,
+   "hi": 0.7310879629629629
+  },
+  "full_gbm::auc[price_fixing@in]": {
+   "point": 0.975,
+   "lo": 0.9477083333333333,
+   "hi": 1.0
+  },
+  "full_gbm::auc[price_fixing@size]": {
+   "point": 0.8583333333333334,
+   "lo": 0.7612500000000001,
+   "hi": 0.9545833333333332
+  },
+  "full_gbm::auc[price_fixing@spread]": {
+   "point": 0.8166666666666667,
+   "lo": 0.6060416666666667,
+   "hi": 0.9439583333333333
+  },
+  "full_gbm::auc[price_fixing]": {
+   "point": 0.8675925925925926,
+   "lo": 0.7841435185185186,
+   "hi": 0.9358333333333333
+  },
+  "full_gbm::auc[rotation@in]": {
+   "point": 0.9083333333333333,
+   "lo": 0.725,
+   "hi": 1.0
+  },
+  "full_gbm::auc[rotation@size]": {
+   "point": 0.7916666666666666,
+   "lo": 0.5310416666666666,
+   "hi": 0.9462499999999999
+  },
+  "full_gbm::auc[rotation@spread]": {
+   "point": 0.825,
+   "lo": 0.7058333333333334,
+   "hi": 1.0
+  },
+  "full_gbm::auc[rotation]": {
+   "point": 0.8453703703703703,
+   "lo": 0.739375,
+   "hi": 0.9530324074074074
+  },
+  "full_gbm::fa[honest@in]": {
+   "point": 0.03333333333333333,
+   "lo": 0.0,
+   "hi": 0.10916666666666662
+  },
+  "full_gbm::fa[honest@size]": {
+   "point": 0.1,
+   "lo": 0.0,
+   "hi": 0.18499999999999991
+  },
+  "full_gbm::fa[honest@spread]": {
+   "point": 0.06666666666666667,
+   "lo": 0.0,
+   "hi": 0.2
+  },
+  "full_gbm::fa_lomo_max[honest@in]": {
+   "point": 0.06666666666666667,
+   "lo": 0.0,
+   "hi": 0.20916666666666664
+  },
+  "full_gbm::fa_lomo_max[honest@size]": {
+   "point": 0.23333333333333334,
+   "lo": 0.13333333333333333,
+   "hi": 0.38499999999999995
+  },
+  "full_gbm::fa_lomo_max[honest@spread]": {
+   "point": 0.13333333333333333,
+   "lo": 0.024166666666666687,
+   "hi": 0.3183333333333333
+  },
+  "full_gbm::macro_auc": {
+   "point": 0.7887731481481481,
+   "lo": 0.7379803240740741,
+   "hi": 0.8382175925925927
+  },
+  "full_gbm::macro_prec10": {
+   "point": 0.625,
+   "lo": 0.4630208333333333,
+   "hi": 0.75859375
+  },
+  "full_gbm::prec10[bid_suppression]": {
+   "point": 0.5833333333333333,
+   "lo": 0.41666666666666663,
+   "hi": 0.7729166666666666
+  },
+  "full_gbm::prec10[complementary]": {
+   "point": 0.5833333333333334,
+   "lo": 0.14375000000000004,
+   "hi": 1.0
+  },
+  "full_gbm::prec10[cover_bidding]": {
+   "point": 0.8333333333333334,
+   "lo": 0.5979166666666668,
+   "hi": 1.0
+  },
+  "full_gbm::prec10[intermittent]": {
+   "point": 0.6666666666666666,
+   "lo": 0.3333333333333333,
+   "hi": 0.9166666666666667
+  },
+  "full_gbm::prec10[noisy_defecting]": {
+   "point": 0.5833333333333333,
+   "lo": 0.2270833333333334,
+   "hi": 0.7958333333333332
+  },
+  "full_gbm::prec10[partial_fringe]": {
+   "point": 0.3333333333333333,
+   "lo": 0.08333333333333333,
+   "hi": 0.6666666666666666
+  },
+  "full_gbm::prec10[price_fixing]": {
+   "point": 0.6666666666666667,
+   "lo": 0.31041666666666673,
+   "hi": 0.9395833333333332
+  },
+  "full_gbm::prec10[rotation]": {
+   "point": 0.75,
+   "lo": 0.5604166666666667,
+   "hi": 0.9395833333333332
+  },
+  "full_gbm::tpr[bid_suppression]": {
+   "point": 0.3333333333333333,
+   "lo": 0.20833333333333331,
+   "hi": 0.5
+  },
+  "full_gbm::tpr[complementary]": {
+   "point": 0.45833333333333337,
+   "lo": 0.030208333333333358,
+   "hi": 0.8979166666666665
+  },
+  "full_gbm::tpr[cover_bidding]": {
+   "point": 0.5416666666666666,
+   "lo": 0.27604166666666685,
+   "hi": 0.8447916666666666
+  },
+  "full_gbm::tpr[intermittent]": {
+   "point": 0.45833333333333337,
+   "lo": 0.2270833333333334,
+   "hi": 0.6364583333333333
+  },
+  "full_gbm::tpr[noisy_defecting]": {
+   "point": 0.29166666666666663,
+   "lo": 0.14375000000000004,
+   "hi": 0.428125
+  },
+  "full_gbm::tpr[partial_fringe]": {
+   "point": 0.125,
+   "lo": 0.0,
+   "hi": 0.4093749999999998
+  },
+  "full_gbm::tpr[price_fixing]": {
+   "point": 0.5,
+   "lo": 0.31041666666666673,
+   "hi": 0.7197916666666666
+  },
+  "full_gbm::tpr[rotation]": {
+   "point": 0.625,
+   "lo": 0.41666666666666663,
+   "hi": 0.8447916666666666
+  },
+  "previous-full_gbm::auc[bid_suppression]": {
+   "point": -0.03703703703703709,
+   "lo": -0.08293981481481479,
+   "hi": 0.06173611111111106
+  },
+  "previous-full_gbm::auc[complementary]": {
+   "point": -0.04907407407407416,
+   "lo": -0.1320833333333333,
+   "hi": -0.0005787037037036547
+  },
+  "previous-full_gbm::auc[cover_bidding]": {
+   "point": -0.002777777777777768,
+   "lo": -0.052962962962963045,
+   "hi": 0.0708101851851851
+  },
+  "previous-full_gbm::auc[intermittent]": {
+   "point": -0.042592592592592626,
+   "lo": -0.10953703703703707,
+   "hi": 0.04252314814814816
+  },
+  "previous-full_gbm::auc[noisy_defecting]": {
+   "point": 0.04907407407407405,
+   "lo": 0.00016203703703700125,
+   "hi": 0.11449074074074057
+  },
+  "previous-full_gbm::auc[partial_fringe]": {
+   "point": -0.021296296296296258,
+   "lo": -0.09124999999999994,
+   "hi": 0.027615740740740757
+  },
+  "previous-full_gbm::auc[price_fixing]": {
+   "point": -0.04629629629629628,
+   "lo": -0.09657407407407409,
+   "hi": -0.014444444444444541
+  },
+  "previous-full_gbm::auc[rotation]": {
+   "point": 0.005555555555555536,
+   "lo": -0.04009259259259263,
+   "hi": 0.036805555555555584
+  },
+  "previous-full_gbm::macro_auc": {
+   "point": -0.01805555555555549,
+   "lo": -0.04217881944444441,
+   "hi": 0.003894675925925875
+  },
+  "previous::auc[bid_suppression@in]": {
+   "point": 0.7833333333333333,
+   "lo": 0.5754166666666668,
+   "hi": 0.9583333333333333
+  },
+  "previous::auc[bid_suppression@size]": {
+   "point": 0.5416666666666667,
+   "lo": 0.3785416666666667,
+   "hi": 0.6941666666666666
+  },
+  "previous::auc[bid_suppression@spread]": {
+   "point": 0.775,
+   "lo": 0.49979166666666675,
+   "hi": 0.935625
+  },
+  "previous::auc[bid_suppression]": {
+   "point": 0.7138888888888889,
+   "lo": 0.6288657407407408,
+   "hi": 0.7977777777777778
+  },
+  "previous::auc[complementary@in]": {
+   "point": 0.7583333333333333,
+   "lo": 0.3566666666666667,
+   "hi": 0.9772916666666667
+  },
+  "previous::auc[complementary@size]": {
+   "point": 0.7749999999999999,
+   "lo": 0.605,
+   "hi": 0.9022916666666667
+  },
+  "previous::auc[complementary@spread]": {
+   "point": 0.8583333333333334,
+   "lo": 0.6316666666666666,
+   "hi": 1.0
+  },
+  "previous::auc[complementary]": {
+   "point": 0.8009259259259259,
+   "lo": 0.596712962962963,
+   "hi": 0.9511342592592592
+  },
+  "previous::auc[cover_bidding@in]": {
+   "point": 0.9333333333333333,
+   "lo": 0.875,
+   "hi": 1.0
+  },
+  "previous::auc[cover_bidding@size]": {
+   "point": 0.7916666666666666,
+   "lo": 0.5702083333333334,
+   "hi": 0.9637499999999999
+  },
+  "previous::auc[cover_bidding@spread]": {
+   "point": 0.9666666666666667,
+   "lo": 0.8847916666666666,
+   "hi": 1.0
+  },
+  "previous::auc[cover_bidding]": {
+   "point": 0.9046296296296297,
+   "lo": 0.8348842592592592,
+   "hi": 0.9685185185185186
+  },
+  "previous::auc[intermittent@in]": {
+   "point": 0.925,
+   "lo": 0.825,
+   "hi": 1.0
+  },
+  "previous::auc[intermittent@size]": {
+   "point": 0.8083333333333333,
+   "lo": 0.646875,
+   "hi": 0.95
+  },
+  "previous::auc[intermittent@spread]": {
+   "point": 0.725,
+   "lo": 0.5504166666666668,
+   "hi": 0.8129166666666666
+  },
+  "previous::auc[intermittent]": {
+   "point": 0.7962962962962963,
+   "lo": 0.7150694444444444,
+   "hi": 0.8442824074074075
+  },
+  "previous::auc[noisy_defecting@in]": {
+   "point": 0.7,
+   "lo": 0.43916666666666676,
+   "hi": 0.9349999999999999
+  },
+  "previous::auc[noisy_defecting@size]": {
+   "point": 0.6333333333333333,
+   "lo": 0.3329166666666668,
+   "hi": 0.885625
+  },
+  "previous::auc[noisy_defecting@spread]": {
+   "point": 0.8583333333333334,
+   "lo": 0.7250000000000001,
+   "hi": 0.95
+  },
+  "previous::auc[noisy_defecting]": {
+   "point": 0.7435185185185185,
+   "lo": 0.6438425925925926,
+   "hi": 0.8321759259259259
+  },
+  "previous::auc[partial_fringe@in]": {
+   "point": 0.55,
+   "lo": 0.35375,
+   "hi": 0.7712499999999999
+  },
+  "previous::auc[partial_fringe@size]": {
+   "point": 0.43333333333333335,
+   "lo": 0.11583333333333336,
+   "hi": 0.7387499999999999
+  },
+  "previous::auc[partial_fringe@spread]": {
+   "point": 0.6416666666666666,
+   "lo": 0.3247916666666667,
+   "hi": 0.8335416666666665
+  },
+  "previous::auc[partial_fringe]": {
+   "point": 0.5342592592592593,
+   "lo": 0.3481481481481482,
+   "hi": 0.6900925925925925
+  },
+  "previous::auc[price_fixing@in]": {
+   "point": 0.8666666666666667,
+   "lo": 0.7870833333333334,
+   "hi": 0.9879166666666667
+  },
+  "previous::auc[price_fixing@size]": {
+   "point": 0.8583333333333334,
+   "lo": 0.718125,
+   "hi": 0.9758333333333332
+  },
+  "previous::auc[price_fixing@spread]": {
+   "point": 0.7416666666666667,
+   "lo": 0.43166666666666664,
+   "hi": 0.949375
+  },
+  "previous::auc[price_fixing]": {
+   "point": 0.8212962962962963,
+   "lo": 0.7263657407407407,
+   "hi": 0.9028935185185185
+  },
+  "previous::auc[rotation@in]": {
+   "point": 0.925,
+   "lo": 0.7250000000000001,
+   "hi": 1.0
+  },
+  "previous::auc[rotation@size]": {
+   "point": 0.7833333333333333,
+   "lo": 0.5954166666666666,
+   "hi": 0.9522916666666666
+  },
+  "previous::auc[rotation@spread]": {
+   "point": 0.8416666666666667,
+   "lo": 0.7239583333333334,
+   "hi": 0.9666666666666666
+  },
+  "previous::auc[rotation]": {
+   "point": 0.8509259259259259,
+   "lo": 0.7162268518518519,
+   "hi": 0.9416666666666667
+  },
+  "previous::fa[honest@in]": {
+   "point": 0.03333333333333333,
+   "lo": 0.0,
+   "hi": 0.13333333333333333
+  },
+  "previous::fa[honest@size]": {
+   "point": 0.16666666666666669,
+   "lo": 0.048333333333333374,
+   "hi": 0.27583333333333326
+  },
+  "previous::fa[honest@spread]": {
+   "point": 0.06666666666666667,
+   "lo": 0.0,
+   "hi": 0.2
+  },
+  "previous::fa_lomo_max[honest@in]": {
+   "point": 0.06666666666666667,
+   "lo": 0.0,
+   "hi": 0.16666666666666669
+  },
+  "previous::fa_lomo_max[honest@size]": {
+   "point": 0.3,
+   "lo": 0.19083333333333335,
+   "hi": 0.5033333333333332
+  },
+  "previous::fa_lomo_max[honest@spread]": {
+   "point": 0.1,
+   "lo": 0.024166666666666687,
+   "hi": 0.27583333333333326
+  },
+  "previous::macro_auc": {
+   "point": 0.7707175925925926,
+   "lo": 0.7188917824074074,
+   "hi": 0.8177517361111111
+  },
+  "previous::macro_prec10": {
+   "point": 0.5729166666666667,
+   "lo": 0.4630208333333333,
+   "hi": 0.709375
+  },
+  "previous::prec10[bid_suppression]": {
+   "point": 0.41666666666666663,
+   "lo": 0.25,
+   "hi": 0.75
+  },
+  "previous::prec10[complementary]": {
+   "point": 0.5833333333333334,
+   "lo": 0.14375000000000004,
+   "hi": 0.9166666666666667
+  },
+  "previous::prec10[cover_bidding]": {
+   "point": 0.8333333333333334,
+   "lo": 0.5375000000000001,
+   "hi": 1.0
+  },
+  "previous::prec10[intermittent]": {
+   "point": 0.5,
+   "lo": 0.08333333333333333,
+   "hi": 0.8333333333333333
+  },
+  "previous::prec10[noisy_defecting]": {
+   "point": 0.5833333333333333,
+   "lo": 0.31041666666666673,
+   "hi": 0.8791666666666664
+  },
+  "previous::prec10[partial_fringe]": {
+   "point": 0.3333333333333333,
+   "lo": 0.0,
+   "hi": 0.5833333333333334
+  },
+  "previous::prec10[price_fixing]": {
+   "point": 0.5,
+   "lo": 0.16666666666666666,
+   "hi": 0.85625
+  },
+  "previous::prec10[rotation]": {
+   "point": 0.8333333333333333,
+   "lo": 0.5604166666666668,
+   "hi": 1.0
+  },
+  "previous::tpr[bid_suppression]": {
+   "point": 0.16666666666666666,
+   "lo": 0.060416666666666716,
+   "hi": 0.3447916666666666
+  },
+  "previous::tpr[complementary]": {
+   "point": 0.5416666666666666,
+   "lo": 0.29166666666666663,
+   "hi": 0.7916666666666666
+  },
+  "previous::tpr[cover_bidding]": {
+   "point": 0.5833333333333333,
+   "lo": 0.39375000000000004,
+   "hi": 0.75
+  },
+  "previous::tpr[intermittent]": {
+   "point": 0.2916666666666667,
+   "lo": 0.030208333333333358,
+   "hi": 0.5645833333333332
+  },
+  "previous::tpr[noisy_defecting]": {
+   "point": 0.3333333333333333,
+   "lo": 0.1854166666666667,
+   "hi": 0.48124999999999996
+  },
+  "previous::tpr[partial_fringe]": {
+   "point": 0.125,
+   "lo": 0.0,
+   "hi": 0.4093749999999998
+  },
+  "previous::tpr[price_fixing]": {
+   "point": 0.5416666666666666,
+   "lo": 0.26875000000000004,
+   "hi": 0.803125
+  },
+  "previous::tpr[rotation]": {
+   "point": 0.5,
+   "lo": 0.10208333333333339,
+   "hi": 0.875
+  },
+  "previous::base_rate[bid_suppression]": {
+   "point": 0.21052631578947367
+  },
+  "previous::base_rate[complementary]": {
+   "point": 0.21052631578947367
+  },
+  "previous::base_rate[cover_bidding]": {
+   "point": 0.21052631578947367
+  },
+  "previous::base_rate[intermittent]": {
+   "point": 0.21052631578947367
+  },
+  "previous::base_rate[noisy_defecting]": {
+   "point": 0.21052631578947367
+  },
+  "previous::base_rate[partial_fringe]": {
+   "point": 0.21052631578947367
+  },
+  "previous::base_rate[price_fixing]": {
+   "point": 0.21052631578947367
+  },
+  "previous::base_rate[rotation]": {
+   "point": 0.21052631578947367
+  },
+  "full_gbm::base_rate[bid_suppression]": {
+   "point": 0.21052631578947367
+  },
+  "full_gbm::base_rate[complementary]": {
+   "point": 0.21052631578947367
+  },
+  "full_gbm::base_rate[cover_bidding]": {
+   "point": 0.21052631578947367
+  },
+  "full_gbm::base_rate[intermittent]": {
+   "point": 0.21052631578947367
+  },
+  "full_gbm::base_rate[noisy_defecting]": {
+   "point": 0.21052631578947367
+  },
+  "full_gbm::base_rate[partial_fringe]": {
+   "point": 0.21052631578947367
+  },
+  "full_gbm::base_rate[price_fixing]": {
+   "point": 0.21052631578947367
+  },
+  "full_gbm::base_rate[rotation]": {
+   "point": 0.21052631578947367
+  }
+ }
+}
