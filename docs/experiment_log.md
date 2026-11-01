@@ -188,3 +188,10 @@ Prototypes use 150 fresh markets per mechanism (seed 78, split label "proto"; ha
 - Decision: the code is KEPT. Rule 8 (keep only a change that improves on the reference) does not fit an ablation variant whose job is to be compared with the reference; read literally it would revert `previous` because it is worse. The user should confirm this reading.
 - Open point for freezing: `scripts/run_locked_test.py` hashes `bidrig/*.py` only, so edits to `bidrig/detectors/*.py` would not change a frozen design's hash. Before any locked run, the hash should include `bidrig/detectors/*.py` (an edit to the locked-run script, so it needs the user's approval).
 - No locked run was made. Next: user approval to freeze `previous` (after the hash fix), then one locked run.
+
+## 2026-11-01 FREEZE-1: design `previous` frozen (hash fix approved by the user)
+
+- User approved: extend the design hash to include `bidrig/detectors/*.py`, then freeze `previous`. The locked run was NOT approved and was not made.
+- Change: `scripts/run_locked_test.py` `design_hash` now hashes `bidrig/*.py` and `bidrig/detectors/*.py` (docstring updated); `tests/test_locked_hash.py` (3 tests: a detector-file edit changes the hash, a package-file edit and a different design name change it, and it works with no detectors folder). 60 tests pass; black and isort clean.
+- Frozen hash for `previous`: 90b0cbe63f309f0e. Design: `docs/frozen_design_previous.md`. Git tag `freeze-previous`.
+- Found while checking: the `full_gbm` hash recorded in locked run 1 (6cc622540eac3929) no longer matches `design_hash("full_gbm")` (4a954c909acec0c8) because source files changed after that run. The hash-based one-run guard would not refuse a repeat `full_gbm` locked run. A name-based guard would close this; not implemented (outside the approved edit). The locked test results for `full_gbm` are unaffected: that run used the earlier source.

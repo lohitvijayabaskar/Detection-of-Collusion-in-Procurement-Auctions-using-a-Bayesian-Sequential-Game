@@ -1,7 +1,8 @@
 # Proposed frozen design: `previous`
 
-Status: PROPOSED. No locked run has been made for this design. A locked run needs the user's
-approval (see "Approval needed").
+Status: FROZEN on 2026-11-01 with the user's approval of the hash fix and the freeze. The
+freeze hash is `90b0cbe63f309f0e`, computed by `scripts/run_locked_test.py` (`design_hash("previous")`).
+No locked run has been made. The locked run itself still needs the user's separate go-ahead.
 
 ## Design
 
@@ -22,20 +23,25 @@ Validation (`results/variant_previous_v1.md`, seeds 0-9, 300 resamples): macro L
 [-0.019, -0.008]. The falsifying test (gap inside the CI) did not trigger. No design choice was
 made on the test split.
 
-## Hashes
+## Hash
 
-| recipe | value |
-|---|---|
-| proposed: name, feature list, GBM_PARAMS, feature version, `bidrig/*.py` and `bidrig/detectors/*.py` | `5f10b7eb8738d81f` |
-| what `scripts/run_locked_test.py` computes today (omits `bidrig/detectors/`) | differs; an edit under `bidrig/detectors/` would not change it |
+- Frozen hash: `90b0cbe63f309f0e` (from `design_hash("previous")`).
+- `design_hash` now covers the design name, `GBM_PARAMS`, feature version and every file in
+  `bidrig/*.py` and `bidrig/detectors/*.py`. Any edit to those files changes the hash, so the
+  one-run rule can tell that the design changed. A test checks this
+  (`tests/test_locked_hash.py`).
+- The earlier proposal hash `5f10b7eb8738d81f` used a different recipe and is superseded.
 
-The hash in `run_locked_test.py` covers `bidrig/*.py` only. For this design the one-run rule
-would not detect an edit to `previous.py`. The proposed recipe closes this gap.
+## Known gap in the one-run guard (not fixed; needs approval)
 
-## Approval needed
+The guard compares hashes only. The `full_gbm` hash recorded in locked run 1 is
+`6cc622540eac3929`; today `design_hash("full_gbm")` gives a different value because source files
+changed after that run (for example the registry lookup in `models.make_design`). A repeat locked
+run of `full_gbm` would therefore not be refused. A name-based check (refuse a design name that
+already has a locked run) would close this. It is outside the approved edit, so it is not made.
 
-1. Approve extending `design_hash` in `scripts/run_locked_test.py` to include
-   `bidrig/detectors/*.py` (a change to the locked-run script).
-2. Approve the single locked run of `previous` with the design above.
+## Approval still needed
 
-Until both are given, no locked run is made.
+One locked run of `previous` with this design: `cd scripts && python run_locked_test.py --design
+previous --note "<reason>"`. It takes about ten minutes and the script refuses a second run
+with this hash.
