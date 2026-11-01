@@ -9,7 +9,6 @@
 | `frozen_design_previous.md` | Frozen design of the `previous` variant (locked run 2) |
 | `frozen_design_stat_auc.md` | Frozen design of the `stat_auc` variant (locked run 3) |
 | `frozen_design_rl_screens.md` | Proposed frozen design of the `rl_screens` variant (no locked run yet) |
-| `loop_coding_prompt.md` | Reusable prompt for coding one detector variant in a loop |
 | `figures/` | Paper figures (PNG) with their data tables (`data/`) and an index (`README.md`) |
 
 Result files live in `../results/` (never deleted); logs in `../results/logs/`.
