@@ -26,10 +26,18 @@ from pathlib import Path
 
 import numpy as np
 
-# Folder with the extracted CSV files. Set BIDRIG_REAL_DATA to point elsewhere.
-REAL_DATA_DIR = Path(
-    os.environ.get("BIDRIG_REAL_DATA", Path(__file__).resolve().parent.parent / "data" / "real")
-)
+
+# Folder with the extracted CSV files. Checks env var, parent dir, or repo data/real.
+def _find_real_data_dir() -> Path:
+    if "BIDRIG_REAL_DATA" in os.environ:
+        return Path(os.environ["BIDRIG_REAL_DATA"])
+    parent_cand = Path(__file__).resolve().parent.parent.parent / "BIDRIG_REAL_DATA"
+    if parent_cand.exists():
+        return parent_cand
+    return Path(__file__).resolve().parent.parent / "data" / "real"
+
+
+REAL_DATA_DIR = _find_real_data_dir()
 
 PTE = "Pre-Tender Estimate (PTE)"
 DATASETS = {

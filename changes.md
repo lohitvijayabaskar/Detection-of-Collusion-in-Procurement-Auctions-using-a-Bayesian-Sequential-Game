@@ -187,3 +187,27 @@ suite.fit(X_train, y_train)
 scores = suite.score(X_test)  # dict mapping detector name -> array of probabilities
 ```
 
+---
+
+## 6. Real Empirical Data Evaluation (`BIDRIG_REAL_DATA`)
+
+To evaluate how these 29 metric combinations generalize to real-world antitrust enforcement, we evaluated them against actual cartel and competitive procurement auctions in `BIDRIG_REAL_DATA` (Japan, Italy, Brazil).
+
+### How to Run the Real Data Benchmark:
+
+```bash
+# Run Leave-One-Dataset-Out (LODO) evaluation across Japan, Italy, and Brazil
+python scripts/run_real_multi_detector_benchmark.py --n-boot 300 --tag final
+```
+This automatically finds `../BIDRIG_REAL_DATA`, extracts features across all 1,459 real tenders, trains all 29 metric combinations under cross-dataset validation, and generates:
+- `results/real_data_multi_detector_report_final.md`
+- `results/real_data_multi_detector_benchmark_final.json`
+
+### Empirical Key Findings:
+- **Best Overall Detector**: `real_quad_minus_corr_gbm` (`disp + shape + gap + pair_coop`, 12 features) achieves Macro Real AUC **0.745** (Brazil: 0.780, Italy: 0.765, Japan: 0.690) and Precision@10% of **0.648**.
+- **Best Triplet Detector**: `real_triplet_disp_shape_coop_gbm` (`disp + shape + pair_coop`, 9 features) achieves Macro Real AUC **0.735**.
+- **All-Metrics Baseline**: `real_all_metrics_gbm` (15 features) achieves Macro Real AUC **0.726**.
+- **Single-Metric Baseline**: `real_disp_gbm` (`disp`, 3 features) achieves Macro Real AUC **0.656**.
+- **Key Empirical Takeaway**: Price distribution metrics (`disp`, `shape`, `gap`) paired with bidder-pair cooperation (`pair_coop`) outperform all-metric combinations because raw correlation metrics (`corr`) overfit when firm identities rotate across disparate institutional rules.
+
+
