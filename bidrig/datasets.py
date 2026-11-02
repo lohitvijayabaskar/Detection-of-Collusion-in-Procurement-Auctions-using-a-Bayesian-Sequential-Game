@@ -24,10 +24,10 @@ from pathlib import Path
 import numpy as np
 
 from bidrig.collusion import IN_SCOPE, MECHANISMS
-from bidrig.features import ALL_FEATURES, market_features
+from bidrig.features import TABLE_FEATURES, market_features
 from bidrig.simulator import MarketSpec, sample_config, simulate_market
 
-FEATURE_VERSION = 3
+FEATURE_VERSION = 5
 CACHE_DIR = Path(__file__).resolve().parent.parent / "cache"
 
 BASE = MarketSpec()
@@ -110,7 +110,7 @@ def _features_for(args) -> tuple[list[float], dict]:
         "n_tenders": m.config.n_tenders,
         "cartel_size": len(m.members),
     }
-    return [f[k] for k in ALL_FEATURES], meta
+    return [f[k] for k in TABLE_FEATURES], meta
 
 
 @dataclass
