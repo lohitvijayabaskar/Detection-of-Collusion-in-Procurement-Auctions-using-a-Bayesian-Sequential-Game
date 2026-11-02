@@ -1,5 +1,37 @@
+# Python byte-compiled / cache files
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
 .pytest_cache/
 cache/
 *.egg-info/
+build/
+dist/
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# Model Checkpoints & Large Archives
+procurement_model_checkpoint/
+procurement_model_checkpoint.zip
+*.zip
+*.tar.gz
+
+# Temporary / Experiment logs
+coadaptation_log.csv
+results/logs/
+*.log
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+Desktop.ini
