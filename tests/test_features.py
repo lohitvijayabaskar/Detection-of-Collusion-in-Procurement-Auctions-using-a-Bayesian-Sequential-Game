@@ -4,6 +4,7 @@ import pytest
 from bidrig.collusion import MECHANISMS
 from bidrig.features import (
     ALL_FEATURES,
+    TABLE_FEATURES,
     bridge_scan,
     cobid_features,
     cusum_max,
@@ -109,8 +110,8 @@ def test_market_features_complete_and_deterministic():
     m = market("cover_bidding", seed=4)
     f1 = market_features(m.bids, m.estimate, np.random.default_rng(9))
     f2 = market_features(m.bids, m.estimate, np.random.default_rng(9))
-    assert set(f1) == set(ALL_FEATURES)
-    assert all((np.isnan(f1[k]) and np.isnan(f2[k])) or f1[k] == f2[k] for k in ALL_FEATURES)
+    assert set(f1) == set(TABLE_FEATURES)
+    assert all((np.isnan(f1[k]) and np.isnan(f2[k])) or f1[k] == f2[k] for k in TABLE_FEATURES)
 
 
 def test_dependence_features_invariant_to_uniform_markup():

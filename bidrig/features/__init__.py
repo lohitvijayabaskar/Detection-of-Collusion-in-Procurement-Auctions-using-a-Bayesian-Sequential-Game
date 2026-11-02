@@ -5,6 +5,7 @@ One module per group: ``literature`` (lit), ``dependence`` (dep), ``participatio
 ``extract`` computes every feature of a market. The names below are the package's API.
 """
 
+from bidrig.features.baselines import BASE_FEATURES, baseline_features
 from bidrig.features.change import (
     CHANGE_FEATURES,
     SERIES,
@@ -34,7 +35,7 @@ from bidrig.features.dependence import (
     permute_within_tenders,
 )
 from bidrig.features.extract import market_features
-from bidrig.features.groups import ALL_FEATURES, FEATURE_GROUPS, group_features
+from bidrig.features.groups import ALL_FEATURES, FEATURE_GROUPS, TABLE_FEATURES, group_features
 from bidrig.features.literature import (
     LIT_FEATURES,
     LIT_SCREENS,
@@ -52,6 +53,7 @@ from bidrig.features.sequential import (
 
 __all__ = [
     "ALL_FEATURES",
+    "BASE_FEATURES",
     "CHANGE_FEATURES",
     "CLOSE_TOL",
     "DEP_FEATURES",
@@ -68,7 +70,9 @@ __all__ = [
     "RAW_STATS",
     "SEQ_FEATURES",
     "SERIES",
+    "TABLE_FEATURES",
     "TIE_TOL",
+    "baseline_features",
     "bridge_scan",
     "change_features",
     "cobid_features",

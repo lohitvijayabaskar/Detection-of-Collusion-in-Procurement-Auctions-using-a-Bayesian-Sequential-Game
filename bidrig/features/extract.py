@@ -6,6 +6,7 @@ import warnings
 
 import numpy as np
 
+from bidrig.features.baselines import baseline_features
 from bidrig.features.change import change_features
 from bidrig.features.dependence import dependence_features
 from bidrig.features.literature import literature_features
@@ -22,4 +23,6 @@ def market_features(bids: np.ndarray, estimate: np.ndarray, rng: np.random.Gener
         feats.update(participation_features(~np.isnan(bids)))
         feats.update(change_features(bids, estimate))
         feats.update(sequential_features(bids, estimate))
+        base_rng = np.random.default_rng(int(rng.integers(0, 2**62)))
+        feats.update(baseline_features(bids, estimate, base_rng))
     return feats

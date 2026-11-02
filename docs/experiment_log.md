@@ -293,3 +293,43 @@ Honest false alarms: all-mechanism model at most 0.082; worst leave-one-out mode
 Validation said 0.863 (paired +0.001 vs full_gbm); the locked value is 0.872 vs 0.870 for full_gbm. The
 locked runs are separate samples and were not paired, so the difference is not tested. Files:
 results/locked_4_rl_screens.{json,md}.
+
+## LIT-1: literature comparison on the validation split (2026-11-02)
+
+- Hypothesis (written before any result): the published detection ideas we can re-implement
+  from public bid data score below our four detectors on macro leave-one-mechanism-out AUC,
+  with the supervised ML-on-screens method (`pub:ml_screens`) closest. Single screens and the
+  Benford, mixture-cluster and isolation-forest baselines are expected to be near 0.5-0.7.
+  The hypothesis is falsified if any published-method detector reaches an AUC whose interval
+  overlaps `full_gbm`.
+- Scope (user decisions): heavy methods (structural estimation, graph neural networks,
+  convolutional networks) are cited, not implemented; methods needing costs, rebids or secret
+  reserve prices (Porter and Zona, Chassang et al. / Kawai and Nakabayashi) are not
+  approximated. Bajari and Ye (conditional independence tests) is left out for the same
+  reason: it needs covariates beyond the public estimate, so any version would be an
+  approximation.
+- Change: `bidrig/features/baselines.py` (three adaptations: Benford digit test on bid gaps,
+  randomisation test on tight bidder groups, co-bidding network group score),
+  `bidrig/detectors/published_methods.py` (9 `pub:*` detectors), `scripts/run_literature_comparison.py`,
+  `tests/test_published_methods.py`. Main feature columns are unchanged; the three new columns are
+  appended (table columns 54-56). `FEATURE_VERSION` is now 5: a stale cache file named `feat_v4_*`
+  from the earlier reverted epidemic-feature attempt exists with 57 different columns, so version 4
+  must not be reused.
+- Metrics: macro LOMO AUC with CIs, worst-scheme AUC, macro precision@10 %, TPR and balanced
+  accuracy at the 5 % false-alarm threshold, highest false-alarm rate, paired AUC difference to
+  `full_gbm`. Validation only; the test split is untouched. A locked run needs a frozen design and approval.
+- Result (validation, seeds 0-9, 300 bootstrap draws; `results/literature_comparison_lit_cmp_v1.{md,json}`):
+  hypothesis NOT falsified. Best published-method detector is `pub:ml_screens` (GBM on the
+  literature screens), macro LOMO AUC 0.806 [0.795, 0.816] against `full_gbm` 0.862
+  [0.853, 0.871]; paired difference -0.056 [-0.067, -0.047]. Single screens: relative distance
+  0.676, variance 0.651; isolation forest 0.622, mixture cluster 0.592, Benford 0.582; the
+  co-bidding network (0.508) and the Bayesian sequential statistic (0.494) are near chance.
+  The randomisation group test scores 0.445 (worst scheme 0.228, bid_suppression): its sign is
+  fixed on the pooled tuning split, so it is inverted on schemes where the tightest trio is not
+  tighter than chance. Our four detectors are within 0.016 of each other (`stat_auc` 0.864,
+  `rl_screens` 0.863, `full_gbm` 0.862, `previous` 0.848). No detector, ours or published,
+  reaches 0.85 on partial_fringe (best 0.673). Highest false-alarm rate on any honest set is
+  0.199 for relative distance and 0.238 for isolation forest (both exceed the 10 % limit).
+- Caveats: these are our own simplified adaptations, not the authors' code or data, so the
+  numbers say how the ideas behave on this benchmark, not how the papers' systems perform.
+  Validation split only; no locked run of the `pub:*` detectors has been made.

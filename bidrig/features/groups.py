@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from bidrig.features.baselines import BASE_FEATURES
 from bidrig.features.change import CHANGE_FEATURES
 from bidrig.features.dependence import DEP_FEATURES
 from bidrig.features.literature import LIT_FEATURES
@@ -16,6 +17,9 @@ FEATURE_GROUPS = {
     "seq": SEQ_FEATURES,
 }
 ALL_FEATURES = tuple(f for g in FEATURE_GROUPS.values() for f in g)
+# Cached tables hold the main features first (so column positions of ALL_FEATURES are
+# unchanged) followed by the published-method adaptations of group ``base``.
+TABLE_FEATURES = ALL_FEATURES + BASE_FEATURES
 
 
 def group_features(groups) -> tuple[str, ...]:

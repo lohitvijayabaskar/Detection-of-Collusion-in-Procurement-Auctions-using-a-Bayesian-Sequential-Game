@@ -9,6 +9,7 @@ One module per detector family, all depending only on ``base`` (interface and re
   previous       variant: ``full_gbm`` without the within-firm null columns
   stat_auc       variant: validation-tuned logistic regression
   rl_screens     variant: screen-subset selection by a bandit
+  published_methods  re-implemented published ideas (``pub:*``) for the literature comparison
 
 Use ``make(name)`` to build a detector; every detector has ``fit(X, y)`` and ``score(X)``.
 """
@@ -16,6 +17,7 @@ Use ``make(name)`` to build a detector; every detector has ``fit(X, y)`` and ``s
 from bidrig.detectors import (  # noqa: F401  (importing a module registers its designs)
     gbm_groups,
     previous,
+    published_methods,
     rl_screens,
     single_screen,
     stat_auc,
