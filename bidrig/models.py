@@ -12,6 +12,16 @@ from bidrig.detectors import (
     MultiDetectorSuite,
     MultiMetricGBM,
 )
+from bidrig.firm_identification import FirmCollusionIdentifier, FirmProfile
+from bidrig.sequential_game import (
+    ALL_SEQ_GAME_COMBINATIONS,
+    BayesianSequentialFilter,
+    OnlineGradientLearner,
+    SEQ_GAME_COMBINATIONS_BY_TIER,
+    SEQ_GAME_PILLARS,
+    TemporalVolatilityTracker,
+    extract_sequential_game_features,
+)
 from bidrig.detectors import make as make_design
 from bidrig.detectors.config import GBM_PARAMS
 from bidrig.detectors.gbm_groups import DESIGNS, GBM, MONOTONE
@@ -21,20 +31,29 @@ from bidrig.detectors.tail_fused import FUSED, Fused, TailScore
 
 __all__ = [
     "ALL_COMBINATIONS",
+    "ALL_SEQ_GAME_COMBINATIONS",
     "BASELINES",
+    "BayesianSequentialFilter",
     "DESIGNS",
     "FUSED",
+    "FirmCollusionIdentifier",
+    "FirmProfile",
     "GBM",
     "GBM_PARAMS",
     "METRIC_COMBINATIONS_BY_TIER",
     "MONOTONE",
     "MultiDetectorSuite",
     "MultiMetricGBM",
+    "OnlineGradientLearner",
+    "SEQ_GAME_COMBINATIONS_BY_TIER",
+    "SEQ_GAME_PILLARS",
     "SINGLE_SCREENS",
     "TAIL_DIRECTIONS",
     "TAIL_MARGIN",
+    "TemporalVolatilityTracker",
     "Fused",
     "SingleScreen",
     "TailScore",
+    "extract_sequential_game_features",
     "make_design",
 ]

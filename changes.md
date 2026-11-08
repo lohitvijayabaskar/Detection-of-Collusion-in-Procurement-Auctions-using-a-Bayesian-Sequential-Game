@@ -210,4 +210,37 @@ This automatically finds `../BIDRIG_REAL_DATA`, extracts features across all 1,4
 - **Single-Metric Baseline**: `real_disp_gbm` (`disp`, 3 features) achieves Macro Real AUC **0.656**.
 - **Key Empirical Takeaway**: Price distribution metrics (`disp`, `shape`, `gap`) paired with bidder-pair cooperation (`pair_coop`) outperform all-metric combinations because raw correlation metrics (`corr`) overfit when firm identities rotate across disparate institutional rules.
 
+---
+
+## 7. Firm-Specific Identification & Bayesian Sequential Game Redone Combinations
+
+### A. Firm-Specific Identification Engine (`bidrig/firm_identification.py`)
+Goes beyond market-level and tender-level AUC scores to identify which specific firms are engaging in collusive behavior:
+- **Multi-Signal Firm Evidence Accumulator**:
+  1. *Tender Alarm Co-occurrence*: Fraction of flagged suspicious tenders firm participated in.
+  2. *Cover-Bid Clustering Score*: Frequency of bids submitted tightly clustered just above the winner ($\le 3\%$).
+  3. *Close-Bidding Network Centrality*: PageRank / degree centrality in the pairwise interaction network.
+  4. *Sequential Bayesian Firm Posterior*: Online belief updating: $P(\text{Firm } i \in \text{Cartel} \mid H_t)$.
+  5. *Online Gradient Attribution*: Firm's contribution to instantaneous gradient norm.
+- **Empirical Results on Authentic Cartels**:
+  - **Italy**: Firm-level AUC **0.802**, **Precision@10: 100%** (10 of 10 top-flagged firms are confirmed cartel conspirators in court records), **Precision@20: 95%**.
+  - **Brazil**: Firm-level AUC **0.896**, **Precision@10: 100%**, **Precision@20: 85%**.
+  - **Japan**: Firm-level AUC **0.738**.
+
+### B. The 29 Combinations Redone with Sequential Game Dynamics (`bidrig/sequential_game.py`)
+Redone across 5 foundational game pillars:
+1. `static` (classical price dispersion, shape, and margin screens)
+2. `identity` (cross-firm pair correlation and relational cooperation)
+3. `bayes_seq` (dynamic Bayesian belief updating, Page's CUSUM, Shiryaev-Roberts statistic)
+4. `grad_learn` (online gradient descent learner tracking drift from competitive manifold)
+5. `temporal` (time-varying rolling volatility, gap velocity trend, MACD of suspicion)
+
+- **How to Run Sequential Game & Firm Benchmark**:
+```bash
+python scripts/run_sequential_game_benchmark.py
+```
+Outputs:
+- `results/sequential_game_multi_detector_results.json`
+
+
 

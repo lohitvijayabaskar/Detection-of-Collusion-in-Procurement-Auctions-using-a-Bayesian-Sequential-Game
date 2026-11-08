@@ -1,0 +1,439 @@
+{
+  "ranked_designs": [
+    {
+      "name": "triplet_static_identity_temporal_gbm",
+      "tier": "triplet_metrics",
+      "pillars": "static+identity+temporal",
+      "num_features": 14,
+      "macro_auc": 0.7337554688599396,
+      "country_aucs": {
+        "japan": 0.6945400175004884,
+        "italy": 0.725977725977726,
+        "brazil": 0.7807486631016044
+      },
+      "macro_prec10": 0.5747795414462081,
+      "macro_far": 0.11510154508802245
+    },
+    {
+      "name": "pair_static_identity_gbm",
+      "tier": "pair_metrics",
+      "pillars": "static+identity",
+      "num_features": 11,
+      "macro_auc": 0.7115436696053131,
+      "country_aucs": {
+        "japan": 0.6716619517292352,
+        "italy": 0.7027195027195027,
+        "brazil": 0.7602495543672013
+      },
+      "macro_prec10": 0.5171957671957672,
+      "macro_far": 0.11510154508802245
+    },
+    {
+      "name": "pair_static_temporal_gbm",
+      "tier": "pair_metrics",
+      "pillars": "static+temporal",
+      "num_features": 10,
+      "macro_auc": 0.7019655458284064,
+      "country_aucs": {
+        "japan": 0.7023132927254039,
+        "italy": 0.6495726495726496,
+        "brazil": 0.7540106951871658
+      },
+      "macro_prec10": 0.4088183421516755,
+      "macro_far": 0.1970374240489183
+    },
+    {
+      "name": "single_static_gbm",
+      "tier": "single_metric",
+      "pillars": "static",
+      "num_features": 7,
+      "macro_auc": 0.6895384901041327,
+      "country_aucs": {
+        "japan": 0.6684676878116744,
+        "italy": 0.6345506345506344,
+        "brazil": 0.7655971479500892
+      },
+      "macro_prec10": 0.43668430335097,
+      "macro_far": 0.1905017039905478
+    },
+    {
+      "name": "pair_identity_temporal_gbm",
+      "tier": "pair_metrics",
+      "pillars": "identity+temporal",
+      "num_features": 7,
+      "macro_auc": 0.6537696311200162,
+      "country_aucs": {
+        "japan": 0.6305952714699561,
+        "italy": 0.7206423206423206,
+        "brazil": 0.6100713012477719
+      },
+      "macro_prec10": 0.5148148148148147,
+      "macro_far": 0.1088789631724047
+    },
+    {
+      "name": "triplet_static_identity_bayes_gbm",
+      "tier": "triplet_metrics",
+      "pillars": "static+identity+bayes_seq",
+      "num_features": 14,
+      "macro_auc": 0.6171767646420923,
+      "country_aucs": {
+        "japan": 0.590539541759054,
+        "italy": 0.43879823879823876,
+        "brazil": 0.822192513368984
+      },
+      "macro_prec10": 0.3315696649029982,
+      "macro_far": 0.1309310139938943
+    },
+    {
+      "name": "single_identity_gbm",
+      "tier": "single_metric",
+      "pillars": "identity",
+      "num_features": 4,
+      "macro_auc": 0.5975974606946424,
+      "country_aucs": {
+        "japan": 0.6161488730874769,
+        "italy": 0.6155918155918155,
+        "brazil": 0.5610516934046346
+      },
+      "macro_prec10": 0.3943562610229277,
+      "macro_far": 0.08126418569285372
+    },
+    {
+      "name": "quad_minus_temporal_gbm",
+      "tier": "quad_metrics",
+      "pillars": "static+identity+bayes_seq+grad_learn",
+      "num_features": 18,
+      "macro_auc": 0.5803730452413643,
+      "country_aucs": {
+        "japan": 0.5480626279617028,
+        "italy": 0.41186221186221184,
+        "brazil": 0.7811942959001783
+      },
+      "macro_prec10": 0.3499118165784833,
+      "macro_far": 0.08936354757855773
+    },
+    {
+      "name": "quad_minus_grad_gbm",
+      "tier": "quad_metrics",
+      "pillars": "static+identity+bayes_seq+temporal",
+      "num_features": 17,
+      "macro_auc": 0.5780583789035445,
+      "country_aucs": {
+        "japan": 0.5931731104144897,
+        "italy": 0.3767417767417767,
+        "brazil": 0.7642602495543672
+      },
+      "macro_prec10": 0.23227513227513227,
+      "macro_far": 0.13614793415334323
+    },
+    {
+      "name": "triplet_static_grad_temporal_gbm",
+      "tier": "triplet_metrics",
+      "pillars": "static+grad_learn+temporal",
+      "num_features": 14,
+      "macro_auc": 0.5731463972835037,
+      "country_aucs": {
+        "japan": 0.5010661705363135,
+        "italy": 0.446982646982647,
+        "brazil": 0.7713903743315507
+      },
+      "macro_prec10": 0.2651675485008818,
+      "macro_far": 0.21869938965949784
+    },
+    {
+      "name": "all_seq_game_gbm",
+      "tier": "all_metrics",
+      "pillars": "static+identity+bayes_seq+grad_learn+temporal",
+      "num_features": 21,
+      "macro_auc": 0.5645017939160323,
+      "country_aucs": {
+        "japan": 0.5546210634520139,
+        "italy": 0.3871017871017871,
+        "brazil": 0.7517825311942958
+      },
+      "macro_prec10": 0.3134920634920635,
+      "macro_far": 0.10578537231681247
+    },
+    {
+      "name": "triplet_static_identity_grad_gbm",
+      "tier": "triplet_metrics",
+      "pillars": "static+identity+grad_learn",
+      "num_features": 15,
+      "macro_auc": 0.561656533691033,
+      "country_aucs": {
+        "japan": 0.5479097110720323,
+        "italy": 0.44900284900284904,
+        "brazil": 0.6880570409982175
+      },
+      "macro_prec10": 0.2861552028218695,
+      "macro_far": 0.1408015243715041
+    },
+    {
+      "name": "pair_static_grad_gbm",
+      "tier": "pair_metrics",
+      "pillars": "static+grad_learn",
+      "num_features": 11,
+      "macro_auc": 0.5602324085577437,
+      "country_aucs": {
+        "japan": 0.4104289318755257,
+        "italy": 0.5233877233877233,
+        "brazil": 0.7468805704099821
+      },
+      "macro_prec10": 0.4440035273368606,
+      "macro_far": 0.1935091277890467
+    },
+    {
+      "name": "single_temporal_gbm",
+      "tier": "single_metric",
+      "pillars": "temporal",
+      "num_features": 3,
+      "macro_auc": 0.5573457238384102,
+      "country_aucs": {
+        "japan": 0.5438404227302462,
+        "italy": 0.5921004921004921,
+        "brazil": 0.536096256684492
+      },
+      "macro_prec10": 0.2972663139329806,
+      "macro_far": 0.0741098157595791
+    },
+    {
+      "name": "quad_minus_bayes_gbm",
+      "tier": "quad_metrics",
+      "pillars": "static+identity+grad_learn+temporal",
+      "num_features": 18,
+      "macro_auc": 0.55597974295842,
+      "country_aucs": {
+        "japan": 0.5959341098113177,
+        "italy": 0.4267288267288266,
+        "brazil": 0.6452762923351159
+      },
+      "macro_prec10": 0.3887125220458554,
+      "macro_far": 0.11043122229734807
+    },
+    {
+      "name": "pair_static_bayes_gbm",
+      "tier": "pair_metrics",
+      "pillars": "static+bayes_seq",
+      "num_features": 10,
+      "macro_auc": 0.5419352695058098,
+      "country_aucs": {
+        "japan": 0.4363143631436314,
+        "italy": 0.3512561512561513,
+        "brazil": 0.8382352941176471
+      },
+      "macro_prec10": 0.2875661375661375,
+      "macro_far": 0.2623253039750673
+    },
+    {
+      "name": "pair_bayes_grad_gbm",
+      "tier": "pair_metrics",
+      "pillars": "bayes_seq+grad_learn",
+      "num_features": 7,
+      "macro_auc": 0.5322688945481208,
+      "country_aucs": {
+        "japan": 0.290474127311806,
+        "italy": 0.49572649572649563,
+        "brazil": 0.8106060606060607
+      },
+      "macro_prec10": 0.44047619047619047,
+      "macro_far": 0.06234829703389541
+    },
+    {
+      "name": "quad_minus_static_gbm",
+      "tier": "quad_metrics",
+      "pillars": "identity+bayes_seq+grad_learn+temporal",
+      "num_features": 14,
+      "macro_auc": 0.5246690252907373,
+      "country_aucs": {
+        "japan": 0.41832963784183297,
+        "italy": 0.46583786583786585,
+        "brazil": 0.6898395721925134
+      },
+      "macro_prec10": 0.47848324514991186,
+      "macro_far": 0.06141229741635421
+    },
+    {
+      "name": "pair_identity_bayes_gbm",
+      "tier": "pair_metrics",
+      "pillars": "identity+bayes_seq",
+      "num_features": 7,
+      "macro_auc": 0.5235637170514065,
+      "country_aucs": {
+        "japan": 0.4568392078905115,
+        "italy": 0.44540274540274544,
+        "brazil": 0.6684491978609626
+      },
+      "macro_prec10": 0.40370370370370373,
+      "macro_far": 0.09363194714783625
+    },
+    {
+      "name": "triplet_identity_bayes_grad_gbm",
+      "tier": "triplet_metrics",
+      "pillars": "identity+bayes_seq+grad_learn",
+      "num_features": 11,
+      "macro_auc": 0.5199663277880266,
+      "country_aucs": {
+        "japan": 0.42897435243944915,
+        "italy": 0.4188034188034188,
+        "brazil": 0.712121212121212
+      },
+      "macro_prec10": 0.4761022927689595,
+      "macro_far": 0.06140694754623085
+    },
+    {
+      "name": "triplet_bayes_grad_temporal_gbm",
+      "tier": "triplet_metrics",
+      "pillars": "bayes_seq+grad_learn+temporal",
+      "num_features": 10,
+      "macro_auc": 0.5152502890320136,
+      "country_aucs": {
+        "japan": 0.33397473473167333,
+        "italy": 0.46355866355866354,
+        "brazil": 0.7482174688057041
+      },
+      "macro_prec10": 0.3952380952380952,
+      "macro_far": 0.0883442265795207
+    },
+    {
+      "name": "triplet_static_bayes_grad_gbm",
+      "tier": "triplet_metrics",
+      "pillars": "static+bayes_seq+grad_learn",
+      "num_features": 14,
+      "macro_auc": 0.5128932508514955,
+      "country_aucs": {
+        "japan": 0.4278954388289964,
+        "italy": 0.3696969696969697,
+        "brazil": 0.7410873440285205
+      },
+      "macro_prec10": 0.29303350970017633,
+      "macro_far": 0.22366520740422025
+    },
+    {
+      "name": "single_bayes_seq_gbm",
+      "tier": "single_metric",
+      "pillars": "bayes_seq",
+      "num_features": 3,
+      "macro_auc": 0.5053135742518813,
+      "country_aucs": {
+        "japan": 0.30512441488051245,
+        "italy": 0.39129759129759123,
+        "brazil": 0.8195187165775402
+      },
+      "macro_prec10": 0.3547619047619048,
+      "macro_far": 0.08539337481190085
+    },
+    {
+      "name": "pair_bayes_temporal_gbm",
+      "tier": "pair_metrics",
+      "pillars": "bayes_seq+temporal",
+      "num_features": 6,
+      "macro_auc": 0.5044465200684796,
+      "country_aucs": {
+        "japan": 0.3222765926718829,
+        "italy": 0.39248899248899244,
+        "brazil": 0.7985739750445633
+      },
+      "macro_prec10": 0.40952380952380957,
+      "macro_far": 0.08449254774474517
+    },
+    {
+      "name": "quad_minus_identity_gbm",
+      "tier": "quad_metrics",
+      "pillars": "static+bayes_seq+grad_learn+temporal",
+      "num_features": 17,
+      "macro_auc": 0.4758785805043164,
+      "country_aucs": {
+        "japan": 0.4040149178921256,
+        "italy": 0.356954156954157,
+        "brazil": 0.6666666666666667
+      },
+      "macro_prec10": 0.21754850088183422,
+      "macro_far": 0.28304956256274716
+    },
+    {
+      "name": "triplet_identity_grad_temporal_gbm",
+      "tier": "triplet_metrics",
+      "pillars": "identity+grad_learn+temporal",
+      "num_features": 11,
+      "macro_auc": 0.47043109292321844,
+      "country_aucs": {
+        "japan": 0.43563473252287377,
+        "italy": 0.4774410774410774,
+        "brazil": 0.49821746880570417
+      },
+      "macro_prec10": 0.31825396825396823,
+      "macro_far": 0.15403198084063532
+    },
+    {
+      "name": "pair_identity_grad_gbm",
+      "tier": "pair_metrics",
+      "pillars": "identity+grad_learn",
+      "num_features": 8,
+      "macro_auc": 0.4256931080180144,
+      "country_aucs": {
+        "japan": 0.4382003381162339,
+        "italy": 0.3602693602693603,
+        "brazil": 0.4786096256684492
+      },
+      "macro_prec10": 0.22830687830687832,
+      "macro_far": 0.1430312819427086
+    },
+    {
+      "name": "pair_grad_temporal_gbm",
+      "tier": "pair_metrics",
+      "pillars": "grad_learn+temporal",
+      "num_features": 7,
+      "macro_auc": 0.37576881302618864,
+      "country_aucs": {
+        "japan": 0.28694429577524616,
+        "italy": 0.35685055685055683,
+        "brazil": 0.48351158645276293
+      },
+      "macro_prec10": 0.2333333333333333,
+      "macro_far": 0.16338583035675666
+    },
+    {
+      "name": "single_grad_learn_gbm",
+      "tier": "single_metric",
+      "pillars": "grad_learn",
+      "num_features": 4,
+      "macro_auc": 0.3262623763984274,
+      "country_aucs": {
+        "japan": 0.27183525753752835,
+        "italy": 0.32727272727272727,
+        "brazil": 0.3796791443850267
+      },
+      "macro_prec10": 0.1768959435626102,
+      "macro_far": 0.22953993393479533
+    }
+  ],
+  "firm_metrics": {
+    "japan": {
+      "firm_auc": 0.6449062557582458,
+      "firm_pr_auc": 0.13774015543841758,
+      "total_cartel_firms": 145,
+      "identified_cartel_firms": 25,
+      "precision_at_10": 0.1,
+      "precision_at_20": 0.1,
+      "precision_at_50": 0.06
+    },
+    "italy": {
+      "firm_auc": 0.7457928802588998,
+      "firm_pr_auc": 0.3778849206827304,
+      "total_cartel_firms": 98,
+      "identified_cartel_firms": 41,
+      "precision_at_10": 0.5,
+      "precision_at_20": 0.6,
+      "precision_at_50": 0.5
+    },
+    "brazil": {
+      "firm_auc": 0.743279569892473,
+      "firm_pr_auc": 0.6674280272491625,
+      "total_cartel_firms": 65,
+      "identified_cartel_firms": 12,
+      "precision_at_10": 0.9,
+      "precision_at_20": 0.75,
+      "precision_at_50": 0.42
+    }
+  }
+}
